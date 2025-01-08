@@ -11,7 +11,6 @@
 const cardsTemplate = document.querySelector('#card-template').content;
 const cardsList = document.querySelector('.places__list'); 
  
- 
 function deleteCard(event) { 
   const cardItem = event.target.closest('.places__item'); 
   if (cardItem) { 
@@ -19,14 +18,13 @@ function deleteCard(event) {
   } 
 } 
  
- 
 function createCard(item) { 
   const cardsElement = cardsTemplate.querySelector('.places__item').cloneNode(true);
 
   const cardImage = cardsElement.querySelector('.card__image') 
   cardImage.src = item.link; 
   cardImage.alt = item.description; 
-  
+
   const cardTitle =  cardsElement.querySelector('.card__title');
   cardTitle.textContent = item.name; 
  
