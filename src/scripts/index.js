@@ -77,9 +77,13 @@ function openModal(event) {
     popupNewCard.style.display = 'flex';
 
   } else {
-    popupTypeImage.style.display = 'flex';
-
-  } 
+    if (event.target.tagName === 'IMG') { // Проверка, является ли target изображением
+      popupTypeImage.style.display = 'flex';
+      document.querySelector('.popup__image').src = event.target.src; // Установка источника изображения в попапе
+      document.querySelector('.popup__caption').innerHTML = event.target.alt; // Установка alt-текста изображения в попапе
+    }
+  };
+  
   /* Закрытие модального окна при помощи Esc */
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
@@ -97,7 +101,7 @@ const popups = document.querySelectorAll('.popup')
 
 popups.forEach((popup) => {
   popup.addEventListener('mousedown', (evt) => {
-      if (!evt.target.classList.contains('popup_is-opened')) {
+      if (!evt.target.classList.contains('popup__content')) {
           closeModal(popup)
       }
       if (evt.target.classList.contains('popup__close')) {
