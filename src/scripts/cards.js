@@ -30,3 +30,4 @@ export const initialCards = [
       description: "Изображение гор и реки",
     }
 ];
+

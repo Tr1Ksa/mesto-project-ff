@@ -45,45 +45,70 @@ initialCards.forEach(item => {
 
 
 /* Модальные окна */
-/* Кнопка редактирования профиля */
+
+// Кнопка редактирования профиля 
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const openEditButtons = document.querySelector('.profile__edit-button');
+
+// Добавляем обработчик события для кнопки открытия формы
 openEditButtons.addEventListener('click', openModal);
 
-/* Кнопка добавления новой карточки */
+// Кнопка добавления новой карточки 
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const openAddButtons = document.querySelector('.profile__add-button');
+// Добавляем обработчик события для кнопки открытия формы
 openAddButtons.addEventListener('click', openModal);
 
-/* Увеличение картинки */
+// Увеличение картинки в модальном окне 
 const popupTypeImage = document.querySelector('.popup_type_image');
-const openCardImage = document.querySelector('.card__image');
-openCardImage.addEventListener('click', openModal);
+const openCardImageList = document.querySelectorAll('.places__list li'); // Получаем список всех элементов списка
 
-const closePopupButton = document.querySelector('.popup__close');
-closePopupButton.addEventListener('click', closeModal);
+// Добавляем обработчики событий для каждого элемента списка
+for (let i = 0; i < openCardImageList.length; i++) {
+  openCardImageList[i].addEventListener('click', openModal);
+}
 
+// Функция открытия модального окна
 function openModal(event) {
   if (event.target === openEditButtons) {
     popupTypeEdit.style.display = 'flex';
+
   } else if (event.target === openAddButtons) {
     popupNewCard.style.display = 'flex';
-  } else if (event.target === openCardImage) {
+
+  } else {
     popupTypeImage.style.display = 'flex';
-  }
-}
 
-function closeModal() {
-  popupTypeEdit.style.display = 'none';
-  popupNewCard.style.display = 'none';
-  popupTypeImage.style.display = 'none';
-}
-
-
-
-// Добавляем закрытие попапа нажатием на Esc
-window.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closeModal();
+  } 
+  /* Закрытие модального окна при помощи Esc */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const popups = document.getElementsByClassName('popup');
+      for (let i = 0; i < popups.length; i++) {
+      closeModal(popups[i]);
+      }
     }
-});
+  });
+}
+
+// Закрытие модального окна кнопкой Х и кликом мышки вне зоны окна
+
+const popups = document.querySelectorAll('.popup')
+
+popups.forEach((popup) => {
+  popup.addEventListener('mousedown', (evt) => {
+      if (!evt.target.classList.contains('popup_is-opened')) {
+          closeModal(popup)
+      }
+      if (evt.target.classList.contains('popup__close')) {
+        closeModal(popup)
+      }
+  })
+})
+
+
+
+/* Функция закрытия модального окна */
+function closeModal(popup) {
+  popup.style.display = 'none';
+}
