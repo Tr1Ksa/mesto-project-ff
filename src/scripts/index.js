@@ -80,8 +80,8 @@ function openModal(event) {
     if (event.target.tagName === 'IMG') { // Проверка, является ли target изображением
       popupTypeImage.style.display = 'flex';
       document.querySelector('.popup__image').src = event.target.src; // Установка источника изображения в попапе
-      document.querySelector('.popup__caption').innerHTML = event.target.alt; // Установка alt-текста изображения в попапе
-    }
+      const cardTitle = event.currentTarget.closest('.card').querySelector('.card__title'); // Получение названия карточки
+      document.querySelector('.popup__caption').innerHTML = cardTitle.textContent; // Установка названия в pop-up
   };
   
   /* Закрытие модального окна при помощи Esc */
@@ -93,6 +93,7 @@ function openModal(event) {
       }
     }
   });
+}
 }
 
 // Закрытие модального окна кнопкой Х и кликом мышки вне зоны окна
