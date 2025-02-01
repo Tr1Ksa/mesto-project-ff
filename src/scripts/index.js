@@ -22,7 +22,7 @@ function deleteCard(event) {
   } 
 } 
 // Функция создания карточки 
-function createCard(item) { 
+function createCard(item, likeHandler) { 
   const cardsElement = cardsTemplate.querySelector('.places__item').cloneNode(true);
 
   const cardImage = cardsElement.querySelector('.card__image') 
@@ -34,12 +34,17 @@ function createCard(item) {
  
   const deleteButton = cardsElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', deleteCard);
+
+  // Добавляем обработчик лайка
+  const likeButton = cardsElement.querySelector('.card__like-button');
+  likeButton.addEventListener('click', likeHandler);
  
   return cardsElement;
 } 
 
+// Создание карточек с передачей функции обработки лайка
 initialCards.forEach(item => {
-  const cardElement = createCard(item);
+  const cardElement = createCard(item, handleLikeClick);
   cardsList.appendChild(cardElement);
 });
 
@@ -154,10 +159,15 @@ newCardForm.addEventListener('submit', function (evt) {
     description: newCardNameInput.value
   };
 
-  const cardElement = createCard(newCard);
+  const cardElement = createCard(newCard, handleLikeClick);
   cardsList.prepend(cardElement);
 
   closeModal(popupNewCard);
   newCardForm.reset();
 });
 
+// Функция обработки лайка
+function handleLikeClick(event) {
+  const likeButton = event.target;
+  likeButton.classList.toggle('card__like-button_is-active');
+}
