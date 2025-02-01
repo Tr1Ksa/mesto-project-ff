@@ -63,11 +63,8 @@ initialCards.forEach((item) => {
 
 // Обработчик открытия модального окна редактирования профиля
 openEditButton.addEventListener('click', () => {
-  // Заполняем поля формы текущими значениями из профиля
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-
-  // Открываем модальное окно
   openModal(popupTypeEdit);
 });
 
@@ -77,7 +74,7 @@ openAddButton.addEventListener('click', () => openModal(popupNewCard));
 // Обработчик отправки формы редактирования профиля
 formElement.addEventListener('submit', handleFormSubmit);
 
-// Закрытие модальных окон при клике вне контента
+// Закрытие модальных окон при клике вне контента или нажатии на Х
 popups.forEach((popup) => {
   popup.addEventListener('mousedown', (evt) => {
     if (evt.target.classList.contains('popup__close') || !evt.target.closest('.popup__content')) {
