@@ -46,118 +46,88 @@ initialCards.forEach(item => {
 
 
 /* Модальные окна */
-
 const popups = document.querySelectorAll('.popup');
 
 // Кнопка редактирования профиля 
 const popupTypeEdit = document.querySelector('.popup_type_edit');
-const openEditButtons = document.querySelector('.profile__edit-button');
-
-// Добавляем обработчик события для кнопки открытия формы
-openEditButtons.addEventListener('click', openModal);
+const openEditButton = document.querySelector('.profile__edit-button');
 
 // Кнопка добавления новой карточки 
 const popupNewCard = document.querySelector('.popup_type_new-card');
-const openAddButtons = document.querySelector('.profile__add-button');
-// Добавляем обработчик события для кнопки открытия формы
-openAddButtons.addEventListener('click', openModal);
+const openAddButton = document.querySelector('.profile__add-button');
 
 // Увеличение картинки в модальном окне 
 const popupTypeImage = document.querySelector('.popup_type_image');
-const openCardImageList = document.querySelectorAll('.places__list li'); // Получаем список всех элементов списка
-for (let i = 0; i < openCardImageList.length; i++) {
-  openCardImageList[i].addEventListener('click', handleImageClick);
-}
+const openCardImageList = document.querySelectorAll('.places__list li');
 
-
-
-
-
-//подтягивание картинки и описания в модальное окно
-
+// Подтягивание картинки и описания в модальное окно
 function handleImageClick(event) {
-  if (event.target.tagName === 'IMG') { // Проверка, является ли target изображением
-    popupTypeImage.style.display = 'flex';
-    document.querySelector('.popup__image').src = event.target.src; // Установка источника изображения в pop-up
-    const cardTitle = event.currentTarget.closest('.card').querySelector('.card__title'); // Получение названия карточки
-    document.querySelector('.popup__caption').innerHTML = cardTitle.textContent; // Установка названия в pop-up
+  if (event.target.tagName === 'IMG') {
+    const card = event.currentTarget.closest('.card');
+    const cardTitle = card.querySelector('.card__title').textContent;
+    const cardImageSrc = event.target.src;
 
-    // Передача события в функцию openModal
-    openModal(event);
+    document.querySelector('.popup__image').src = cardImageSrc;
+    document.querySelector('.popup__caption').textContent = cardTitle;
+
+    openModal(popupTypeImage);
   }
 }
 
-
 // Функция открытия модального окна
-function openModal(event) {
-  if (event.target === openEditButtons) {
-    popupTypeEdit.style.display = 'flex';
+function openModal(popup) {
+  popup.classList.add('popup_is-opened');
+  popup.classList.remove('popup_is-animated');
 
-  } else if (event.target === openAddButtons) {
-    popupNewCard.style.display = 'flex';
-
-  } else if (event.target === openCardImageList) {
-      popupTypeImage.style.display = 'flex';
-  };
+  if (popup === popupTypeEdit) {
+    nameInput.value = profileTitle.textContent;
+    jobInput.value = profileDescription.textContent;
+  }
 }
 
-
-  // Закрытие модального окна при помощи Esc 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      for (let i = 0; i < popups.length; i++) {
-      closeModal(popups[i]);
-      }
-    }
-  });
-
+// Закрытие модального окна при помощи Esc 
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    popups.forEach(closeModal);
+  }
+});
 
 // Закрытие модального окна кнопкой Х и кликом мышки вне зоны модального окна
 popups.forEach((popup) => {
   popup.addEventListener('mousedown', (evt) => {
-    if (!evt.target.classList.contains('popup__close')) {
-      // Не закрывать модальное окно, если пользователь щёлкает в любом месте внутри него.
-      return;
+    if (evt.target.classList.contains('popup__close') || !evt.target.closest('.popup__content')) {
+      closeModal(popup);
     }
-    // Если нажата кнопка закрытия, закрыть модальное окно.
-    closeModal(popup);
   });
 });
 
-
-
-/* Функция закрытия модального окна */
+// Функция закрытия модального окна
 function closeModal(popup) {
-  popup.style.display = 'none';
+  popup.classList.remove('popup_is-opened');
+  popup.classList.add('popup_is-animated');
 }
-
-
 
 // Редактирование имени и информации о себе
+const formElement = document.querySelector('.popup__form[name="edit-profile"]');
+const nameInput = formElement.querySelector('.popup__input_type_name');
+const jobInput = formElement.querySelector('.popup__input_type_description');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const closeButton = popupTypeEdit.querySelector('.popup__close');
 
-// Находим форму в DOM
-const formElement = document.querySelector('edit-profile'); // Воспользуйтесь методом querySelector()
-
-// Находим поля формы в DOM
-const nameInput = document.querySelector('name'); // Воспользуйтесь инструментом .querySelector()
-const jobInput = document.querySelector('description'); // Воспользуйтесь инструментом .querySelector()
-
-// Обработчик «отправки» формы, хотя пока
-// она никуда отправляться не будет
+// Обработчик «отправки» формы
 function handleFormSubmit(evt) {
-    evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+  evt.preventDefault();
 
-    // Получаем значение полей jobInput и nameInput из свойства value
-    const userName = nameInput.value;
-    const jobDescription = jobInput.value;
+  profileTitle.textContent = nameInput.value;
+  profileDescription.textContent = jobInput.value;
 
-    // Выбираем элементы, куда должны быть вставлены значения полей
-    const resultElement = document.getElementById('result');
-
-    // Вставляем новые значения с помощью textContent
-    resultElement.textContent = `Имя: ${userName} \nОписание: ${jobDescription}`;
+  closeModal(popupTypeEdit);
 }
 
-// Прикрепляем обработчик к форме:
-// он будет следить за событием "submit" - «отправка»
+// Добавляем обработчики событий
+openEditButton.addEventListener('click', () => openModal(popupTypeEdit));
+openAddButton.addEventListener('click', () => openModal(popupNewCard));
+openCardImageList.forEach((card) => card.addEventListener('click', handleImageClick));
+closeButton.addEventListener('click', () => closeModal(popupTypeEdit));
 formElement.addEventListener('submit', handleFormSubmit);
