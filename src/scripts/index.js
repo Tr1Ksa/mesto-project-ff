@@ -105,6 +105,10 @@ popups.forEach((popup) => {
 function closeModal(popup) {
   popup.classList.remove('popup_is-opened');
   popup.classList.add('popup_is-animated');
+
+  if (popup === popupNewCard) {
+    newCardForm.reset();
+  }
 }
 
 // Редактирование имени и информации о себе
@@ -131,3 +135,29 @@ openAddButton.addEventListener('click', () => openModal(popupNewCard));
 openCardImageList.forEach((card) => card.addEventListener('click', handleImageClick));
 closeButton.addEventListener('click', () => closeModal(popupTypeEdit));
 formElement.addEventListener('submit', handleFormSubmit);
+
+
+
+
+
+// Добовление новой карточки с помощью кнопки +
+const newCardForm = document.querySelector('.popup__form[name="new-place"]');
+const newCardNameInput = newCardForm.querySelector('.popup__input_type_card-name');
+const newCardLinkInput = newCardForm.querySelector('.popup__input_type_url');
+
+newCardForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+
+  const newCard = {
+    name: newCardNameInput.value,
+    link: newCardLinkInput.value,
+    description: newCardNameInput.value
+  };
+
+  const cardElement = createCard(newCard);
+  cardsList.prepend(cardElement);
+
+  closeModal(popupNewCard);
+  newCardForm.reset();
+});
+
