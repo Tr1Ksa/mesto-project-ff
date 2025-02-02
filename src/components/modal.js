@@ -26,7 +26,7 @@ function handleEscape(event) {
   }
 }
 
-// Зактырие модального окна клико по оверлею и кнопке закрытия
+// Зактырие модального окна кликом по оверлею и кнопке закрытия
 export const closePopupByClick = (evt) => {
   if (evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup')) {
     closeModal(evt.currentTarget);
