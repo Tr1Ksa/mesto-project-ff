@@ -202,3 +202,57 @@ editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 popups.forEach((popup) => {
   popup.addEventListener('mousedown', closePopupByClick); // Закрываем попап по клику вне области
 });
+
+
+
+
+//==================================================================================
+// Работа с API
+// index.js
+import { getUserInfo, getInitialCards, updateProfile, addNewCard } from '../components/api.js';
+
+// Загрузка данных пользователя и карточек
+Promise.all([getUserInfo(), getInitialCards()])
+  .then(([userData, cards]) => {
+    // Обновляем данные профиля
+    profileTitle.textContent = userData.name;
+    profileDescription.textContent = userData.about;
+
+    // Отображаем карточки
+    cards.forEach((item) => {
+      const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick);
+      cardsList.appendChild(cardElement);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+// Обработчик отправки формы редактирования профиля
+editProfileForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  updateProfile(nameInput.value, jobInput.value)
+    .then((userData) => {
+      profileTitle.textContent = userData.name;
+      profileDescription.textContent = userData.about;
+      closeModal(popupTypeEdit);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+// Обработчик отправки формы добавления карточки
+newCardForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  addNewCard(newCardNameInput.value, newCardLinkInput.value)
+    .then((newCard) => {
+      const cardElement = createCard(newCard, handleLikeClick, deleteCard, handleImageClick);
+      cardsList.prepend(cardElement);
+      closeModal(popupNewCard);
+      newCardForm.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
