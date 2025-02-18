@@ -46,8 +46,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 
 
 //=============================================================================================
-
-// Функция обработки лайка
+ // Функция обработки лайка
 export function handleLikeClick(event) {
   const likeButton = event.target;
   likeButton.classList.toggle('card__like-button_is-active');
