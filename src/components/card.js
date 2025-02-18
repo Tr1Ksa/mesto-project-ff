@@ -1,5 +1,6 @@
-import { openModal } from './modal.js';
-// Функция создания карточки
+ import { openModal } from './modal.js';
+// Функция создания карточки 
+
 export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId) {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
@@ -12,6 +13,9 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   cardTitle.textContent = item.name;
 
   const deleteButton = cardElement.querySelector('.card__delete-button');
+
+  // Добавляем data-card-id к карточке
+  cardElement.dataset.cardId = item._id;
 
   // Проверяем, принадлежит ли карточка текущему пользователю
   if (item.owner && item.owner._id === currentUserId) {
@@ -38,8 +42,6 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 
   return cardElement;
 }
-
-
 //=============================================================================================
 
 // Функция обработки лайка
