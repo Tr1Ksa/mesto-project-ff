@@ -42,6 +42,9 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 
   return cardElement;
 }
+
+
+
 //=============================================================================================
 
 // Функция обработки лайка
