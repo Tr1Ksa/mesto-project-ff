@@ -1,8 +1,8 @@
 
 import '../pages/index.css';
 import { initialCards } from '../components/cards.js';
-import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { openModal, closeModal } from '../components/modal.js';
+import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
 import { enableValidation, clearValidation, validateName, validateDescription, validatePlaceName, validateLink } from '../components/validation.js';
 
@@ -126,7 +126,7 @@ openAddButton.addEventListener('click', () => {
   clearValidation(newCardForm, enableValidation); // Очищаем ошибки валидации
   openModal(popupNewCard); // Открываем попап
 });
-
+/*
 // Обработчик отправки формы добавления карточки
 newCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault(); // Отменяем стандартное поведение формы
@@ -145,6 +145,47 @@ newCardForm.addEventListener('submit', (evt) => {
   const submitButton = newCardForm.querySelector('.popup__button'); // Находим кнопку "Сохранить"
   submitButton.disabled = true; // Деактивируем кнопку
   submitButton.classList.add(enableValidation.inactiveButtonClass); // Добавляем класс неактивной кнопки
+});  
+
+newCardForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  addNewCard(newCardNameInput.value, newCardLinkInput.value)
+    .then((newCard) => {
+      const cardElement = createCard(newCard, handleLikeClick, deleteCard, handleImageClick, currentUserId);
+      cardsList.prepend(cardElement);
+      closeModal(popupNewCard);
+      newCardForm.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}); */
+
+// Обработчик отправки формы добавления карточки
+newCardForm.addEventListener('submit', (evt) => {
+  evt.preventDefault(); // Отменяем стандартное поведение формы
+
+  const newCard = {
+    name: newCardNameInput.value, // Название карточки
+    link: newCardLinkInput.value // Ссылка на изображение
+  };
+
+  // Здесь вы можете вызывать функцию добавления карточки на сервер
+  addNewCard(newCard.name, newCard.link)
+    .then((newCardResponse) => {
+      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, handleImageClick, currentUserId); // Создаем новую карточку
+      cardsList.prepend(cardElement); // Добавляем карточку в начало списка
+      
+      closeModal(popupNewCard); // Закрываем попап
+      newCardForm.reset(); // Очищаем форму
+      
+      const submitButton = newCardForm.querySelector('.popup__button'); // Находим кнопку "Сохранить"
+      submitButton.disabled = true; // Деактивируем кнопку
+      submitButton.classList.add(enableValidation.inactiveButtonClass); // Добавляем класс неактивной кнопки
+    })
+    .catch((err) => {
+      console.log(err); // Логируем ошибку
+    });
 });
 
 // Инициализация карточек
@@ -208,19 +249,20 @@ popups.forEach((popup) => {
 
 //==================================================================================
 // Работа с API
-// index.js
-import { getUserInfo, getInitialCards, updateProfile, addNewCard } from '../components/api.js';
 
-// Загрузка данных пользователя и карточек
+import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi } from '../components/api.js';
+
+  let currentUserId;
+
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {
-    // Обновляем данные профиля
+    currentUserId = userData._id; // Сохраняем ID пользователя
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
-
+  
     // Отображаем карточки
     cards.forEach((item) => {
-      const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick);
+      const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick, currentUserId);
       cardsList.appendChild(cardElement);
     });
   })
@@ -242,15 +284,22 @@ editProfileForm.addEventListener('submit', (evt) => {
     });
 });
 
-// Обработчик отправки формы добавления карточки
-newCardForm.addEventListener('submit', (evt) => {
+// Обработчик для кнопки "Да" в попапе подтверждения удаления
+const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
+const confirmDeleteForm = confirmDeletePopup.querySelector('.popup__form');
+
+confirmDeleteForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
-  addNewCard(newCardNameInput.value, newCardLinkInput.value)
-    .then((newCard) => {
-      const cardElement = createCard(newCard, handleLikeClick, deleteCard, handleImageClick);
-      cardsList.prepend(cardElement);
-      closeModal(popupNewCard);
-      newCardForm.reset();
+
+  const cardId = confirmDeletePopup.dataset.cardId;
+
+  deleteCardApi(cardId)
+    .then(() => {
+      const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+      if (cardElement) {
+        cardElement.remove();
+      }
+      closeModal(confirmDeletePopup);
     })
     .catch((err) => {
       console.log(err);

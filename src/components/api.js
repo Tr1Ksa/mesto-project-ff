@@ -70,3 +70,17 @@ export const addNewCard = (name, link) => {
       return Promise.reject(`Ошибка: ${res.status}`);
     });
 };
+
+// Функция удаления карточки через API
+export const deleteCardApi = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    });
+};
