@@ -1,7 +1,7 @@
 // card.js
 
 import { openModal } from './modal.js';
-import { likeCard, unlikeCard } from './api.js'; // Убедитесь, что функции импортируются
+import { likeCard, unlikeCard } from './api.js';
 
 export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId) {
   const cardTemplate = document.querySelector('#card-template');
