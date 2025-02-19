@@ -1,3 +1,5 @@
+//modal.js
+
 // Функция открытия модального окна
 export function openModal(popup) {
   console.log('Открытие модального окна'); // Добавьте эту строку

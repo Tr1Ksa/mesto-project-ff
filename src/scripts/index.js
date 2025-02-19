@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Функция обработки клика по изображению
-function handleImageClick(event) {
+function openImagePopup(event) {
   const card = event.target.closest('.card');
   const cardTitle = card.querySelector('.card__title').textContent;
   const cardImageSrc = event.target.src;
@@ -95,32 +95,32 @@ function handleImageClick(event) {
   openModal(popupTypeImage);
 }
 
- // Обработчик отправки формы редактирования профиля
-    function handleEditProfileFormSubmit(evt) {
-      evt.preventDefault();
-    
-      const saveButton = editProfileForm.querySelector('.popup__button');
-      const defaultText = saveButton.textContent;
-    
-      // Меняем текст кнопки на "Сохранение..."
-      toggleButtonState(saveButton, true, defaultText);
-    
-      const name = nameInput.value;
-      const job = jobInput.value;
-    
-      updateProfile(name, job)
-        .then((userData) => {
-          updateProfileInfo(userData.name, userData.about);
-          closeModal(popupTypeEdit);
-        })
-        .catch((err) => {
-          console.error('Ошибка при обновлении профиля:', err);
-        })
-        .finally(() => {
-          // Возвращаем исходный текст кнопки
-          toggleButtonState(saveButton, false, defaultText);
-        });
-    }
+// Обработчик отправки формы редактирования профиля
+function handleEditProfileFormSubmit(evt) {
+  evt.preventDefault();
+
+  const saveButton = editProfileForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  // Меняем текст кнопки на "Сохранение..."
+  toggleButtonLoadingState(saveButton, true, defaultText);
+
+  const name = nameInput.value;
+  const job = jobInput.value;
+
+  updateProfile(name, job)
+    .then((userData) => {
+      updateProfileInfo(userData.name, userData.about);
+      closeModal(popupTypeEdit);
+    })
+    .catch((err) => {
+      console.error('Ошибка при обновлении профиля:', err);
+    })
+    .finally(() => {
+      // Возвращаем исходный текст кнопки
+      toggleButtonLoadingState(saveButton, false, defaultText);
+    });
+}
 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
@@ -142,7 +142,7 @@ newCardForm.addEventListener('submit', (evt) => {
   const defaultText = saveButton.textContent;
 
   // Меняем текст кнопки на "Сохранение..."
-  toggleButtonState(saveButton, true, defaultText);
+  toggleButtonLoadingState(saveButton, true, defaultText);
 
   const newCard = {
     name: newCardNameInput.value,
@@ -151,7 +151,7 @@ newCardForm.addEventListener('submit', (evt) => {
 
   addNewCard(newCard.name, newCard.link)
     .then((newCardResponse) => {
-      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, handleImageClick, currentUserId);
+      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, openImagePopup, currentUserId);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
       newCardForm.reset();
@@ -161,13 +161,13 @@ newCardForm.addEventListener('submit', (evt) => {
     })
     .finally(() => {
       // Возвращаем исходный текст кнопки
-      toggleButtonState(saveButton, false, defaultText);
+      toggleButtonLoadingState(saveButton, false, defaultText);
     });
 });
 
 // Инициализация карточек
 initialCards.forEach((item) => {
-  const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick);
+  const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup);
   cardsList.appendChild(cardElement);
 });
 
@@ -178,7 +178,6 @@ openEditButton.addEventListener('click', () => {
   clearValidation(editProfileForm, enableValidation);
   const nameError = editProfileForm.querySelector('.popup__error_type_name');
   const descriptionError = editProfileForm.querySelector('.popup__error_type_description');
-/*   const saveButton = editProfileForm.querySelector('.popup__button'); */
   const isNameValid = validateName(nameInput, nameError);
   const isDescriptionValid = validateDescription(jobInput, descriptionError);
   toggleSaveButton(editProfileForm, isNameValid && isDescriptionValid);
@@ -202,7 +201,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
-      const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick, currentUserId);
+      const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId);
       cardsList.appendChild(cardElement);
     });
   })
@@ -221,7 +220,7 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
   const defaultText = saveButton.textContent;
 
   // Меняем текст кнопки на "Удаление..."
-  toggleButtonState(saveButton, true, defaultText, 'Удаление...');
+  toggleButtonLoadingState(saveButton, true, defaultText, 'Удаление...');
 
   const cardId = confirmDeletePopup.dataset.cardId;
 
@@ -238,7 +237,7 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
     })
     .finally(() => {
       // Возвращаем исходный текст кнопки
-      toggleButtonState(saveButton, false, defaultText);
+      toggleButtonLoadingState(saveButton, false, defaultText);
     });
 });
 
@@ -276,7 +275,7 @@ editAvatarForm.addEventListener('submit', (evt) => {
   const defaultText = saveButton.textContent;
 
   // Меняем текст кнопки на "Сохранение..."
-  toggleButtonState(saveButton, true, defaultText);
+  toggleButtonLoadingState(saveButton, true, defaultText);
 
   const avatarUrl = avatarUrlInput.value;
 
@@ -291,7 +290,7 @@ editAvatarForm.addEventListener('submit', (evt) => {
     })
     .finally(() => {
       // Возвращаем исходный текст кнопки
-      toggleButtonState(saveButton, false, defaultText);
+      toggleButtonLoadingState(saveButton, false, defaultText);
     });
 });
 
@@ -333,9 +332,8 @@ async function validateAvatarUrl(input, errorElement) {
   }
 }
 
-//=======================================================================================
 // Функция для изменения состояния кнопки
-function toggleButtonState(button, isLoading, defaultText, loadingText = 'Сохранение...') {
+function toggleButtonLoadingState(button, isLoading, defaultText, loadingText = 'Сохранение...') {
   if (isLoading) {
     button.textContent = loadingText;
     button.disabled = true;
