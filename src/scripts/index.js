@@ -95,7 +95,7 @@ function handleImageClick(event) {
   openModal(popupTypeImage);
 }
 
-// Обработчик отправки формы редактирования профиля
+/* // Обработчик отправки формы редактирования профиля
 function handleEditProfileFormSubmit(evt) {
   evt.preventDefault();
 
@@ -110,7 +110,33 @@ function handleEditProfileFormSubmit(evt) {
     .catch((err) => {
       console.error('Ошибка при обновлении профиля:', err);
     });
-}
+} */
+
+    function handleEditProfileFormSubmit(evt) {
+      evt.preventDefault();
+    
+      const saveButton = editProfileForm.querySelector('.popup__button');
+      const defaultText = saveButton.textContent;
+    
+      // Меняем текст кнопки на "Сохранение..."
+      toggleButtonState(saveButton, true, defaultText);
+    
+      const name = nameInput.value;
+      const job = jobInput.value;
+    
+      updateProfile(name, job)
+        .then((userData) => {
+          updateProfileInfo(userData.name, userData.about);
+          closeModal(popupTypeEdit);
+        })
+        .catch((err) => {
+          console.error('Ошибка при обновлении профиля:', err);
+        })
+        .finally(() => {
+          // Возвращаем исходный текст кнопки
+          toggleButtonState(saveButton, false, defaultText);
+        });
+    }
 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
@@ -125,7 +151,7 @@ openAddButton.addEventListener('click', () => {
 });
 
 // Обработчик отправки формы добавления карточки
-newCardForm.addEventListener('submit', (evt) => {
+/* newCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
   const newCard = {
@@ -145,6 +171,36 @@ newCardForm.addEventListener('submit', (evt) => {
     })
     .catch((err) => {
       console.log(err);
+    });
+}); */
+
+newCardForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const saveButton = newCardForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  // Меняем текст кнопки на "Сохранение..."
+  toggleButtonState(saveButton, true, defaultText);
+
+  const newCard = {
+    name: newCardNameInput.value,
+    link: newCardLinkInput.value
+  };
+
+  addNewCard(newCard.name, newCard.link)
+    .then((newCardResponse) => {
+      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, handleImageClick, currentUserId);
+      cardsList.prepend(cardElement);
+      closeModal(popupNewCard);
+      newCardForm.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      // Возвращаем исходный текст кнопки
+      toggleButtonState(saveButton, false, defaultText);
     });
 });
 
@@ -197,7 +253,7 @@ Promise.all([getUserInfo(), getInitialCards()])
 const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
 const confirmDeleteForm = confirmDeletePopup.querySelector('.popup__form');
 
-confirmDeleteForm.addEventListener('submit', (evt) => {
+/* confirmDeleteForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const cardId = confirmDeletePopup.dataset.cardId;
 
@@ -211,6 +267,33 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
     })
     .catch((err) => {
       console.log(err);
+    });
+}); */
+confirmDeleteForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const saveButton = confirmDeleteForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  // Меняем текст кнопки на "Удаление..."
+  toggleButtonState(saveButton, true, defaultText, 'Удаление...');
+
+  const cardId = confirmDeletePopup.dataset.cardId;
+
+  deleteCardApi(cardId)
+    .then(() => {
+      const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+      if (cardElement) {
+        cardElement.remove();
+      }
+      closeModal(confirmDeletePopup);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      // Возвращаем исходный текст кнопки
+      toggleButtonState(saveButton, false, defaultText);
     });
 });
 
@@ -241,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Обработчик для отправки формы редактирования аватара
-editAvatarForm.addEventListener('submit', (evt) => {
+/* editAvatarForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
   const avatarUrl = avatarUrlInput.value;
@@ -254,6 +337,31 @@ editAvatarForm.addEventListener('submit', (evt) => {
     })
     .catch((err) => {
       console.error('Ошибка при обновлении аватара:', err);
+    });
+}); */
+editAvatarForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const saveButton = editAvatarForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  // Меняем текст кнопки на "Сохранение..."
+  toggleButtonState(saveButton, true, defaultText);
+
+  const avatarUrl = avatarUrlInput.value;
+
+  updateAvatar(avatarUrl)
+    .then((userData) => {
+      const profileImage = document.querySelector('.profile__image');
+      profileImage.style.backgroundImage = `url('${userData.avatar}')`;
+      closeModal(popupEditAvatar);
+    })
+    .catch((err) => {
+      console.error('Ошибка при обновлении аватара:', err);
+    })
+    .finally(() => {
+      // Возвращаем исходный текст кнопки
+      toggleButtonState(saveButton, false, defaultText);
     });
 });
 
@@ -292,5 +400,17 @@ async function validateAvatarUrl(input, errorElement) {
       errorElement.textContent = 'Не удалось проверить URL';
       return false;
     }
+  }
+}
+
+//=======================================================================================
+// Функция для изменения состояния кнопки
+function toggleButtonState(button, isLoading, defaultText, loadingText = 'Сохранение...') {
+  if (isLoading) {
+    button.textContent = loadingText;
+    button.disabled = true;
+  } else {
+    button.textContent = defaultText;
+    button.disabled = false;
   }
 }
