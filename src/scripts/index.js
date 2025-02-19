@@ -216,12 +216,6 @@ const confirmDeleteForm = confirmDeletePopup.querySelector('.popup__form');
 confirmDeleteForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
-  const saveButton = confirmDeleteForm.querySelector('.popup__button');
-  const defaultText = saveButton.textContent;
-
-  // Меняем текст кнопки на "Удаление..."
-  toggleButtonLoadingState(saveButton, true, defaultText, 'Удаление...');
-
   const cardId = confirmDeletePopup.dataset.cardId;
 
   deleteCardApi(cardId)
@@ -234,10 +228,6 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
     })
     .catch((err) => {
       console.log(err);
-    })
-    .finally(() => {
-      // Возвращаем исходный текст кнопки
-      toggleButtonLoadingState(saveButton, false, defaultText);
     });
 });
 

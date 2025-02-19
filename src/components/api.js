@@ -1,6 +1,3 @@
-
-// api.js
-
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-33',
   headers: {
@@ -23,7 +20,6 @@ export const getUserInfo = () => {
 };
 
 // Загрузка карточек
-
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
