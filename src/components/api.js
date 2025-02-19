@@ -23,6 +23,7 @@ export const getUserInfo = () => {
 };
 
 // Загрузка карточек
+
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
@@ -32,6 +33,10 @@ export const getInitialCards = () => {
         return res.json();
       }
       return Promise.reject(`Ошибка: ${res.status}`);
+    })
+    .then(data => {
+      console.log(data); // Логируем данные, чтобы убедиться, что лайки приходят
+      return data;
     });
 };
 
@@ -84,7 +89,6 @@ export const deleteCardApi = (cardId) => {
       return Promise.reject(`Ошибка: ${res.status}`);
     });
 };
-
 
 // Постановка лайка
 export const likeCard = (cardId) => {

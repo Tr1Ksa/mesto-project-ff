@@ -1,3 +1,5 @@
+//index.js
+
 import '../pages/index.css';
 import { initialCards } from '../components/cards.js';
 import { openModal, closeModal } from '../components/modal.js';
