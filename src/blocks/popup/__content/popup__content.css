@@ -7,10 +7,15 @@
   position: relative;
   box-sizing: border-box;
   padding: 34px 36px;
+  color: black;
 }
 
 .popup_type_confirm-delete .popup__content {
   min-height: 181px;
+}
+
+.popup_type_edit-avatar .popup__content{
+  min-height: 100px;
 }
 
 @media screen and (max-width: 568px) {

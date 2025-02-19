@@ -6,7 +6,7 @@ import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
 import { enableValidation, clearValidation, validateName, validateDescription, validatePlaceName, validateLink } from '../components/validation.js';
-import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi } from '../components/api.js';
+import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, updateAvatar } from '../components/api.js';
 
 // DOM-элементы
 const cardsList = document.querySelector('.places__list');
@@ -174,11 +174,15 @@ popups.forEach((popup) => {
 });
 
 // Работа с API
-Promise.all([getUserInfo(), getInitialCards()])
+
+  Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {
     currentUserId = userData._id;
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
+
+    const profileImage = document.querySelector('.profile__image');
+    profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
       const cardElement = createCard(item, handleLikeClick, deleteCard, handleImageClick, currentUserId);
@@ -209,3 +213,88 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
       console.log(err);
     });
 });
+
+//=========================================================================================
+
+const editAvatarButton = document.querySelector('.profile__edit-avatar-button');
+const popupEditAvatar = document.querySelector('.popup_type_edit-avatar');
+const editAvatarForm = document.querySelector('.popup__form[name="edit-avatar"]');
+const avatarUrlInput = editAvatarForm.querySelector('.popup__input_type_avatar-url');
+
+// обработчик для открытия модального окна при клике на иконку редактирования аватара
+editAvatarButton.addEventListener('click', () => {
+  editAvatarForm.reset();
+  clearValidation(editAvatarForm, enableValidation);
+  openModal(popupEditAvatar);
+});
+
+
+//обработчик для валидации формы редактирования аватара:
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.forms['edit-avatar'];
+  const avatarInput = form.elements.avatar;
+  const errorAvatar = form.querySelector('.popup__error_visible_avatar');
+
+  const validateForm = async () => {
+    const isAvatarValid = await validateAvatarUrl(avatarInput, errorAvatar);
+    toggleSaveButton(form, isAvatarValid);
+  };
+
+  avatarInput.addEventListener('input', validateForm);
+});
+
+//обработчик для отправки формы редактирования аватара:
+editAvatarForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  const avatarUrl = avatarUrlInput.value;
+
+  updateAvatar(avatarUrl)
+    .then((userData) => {
+      const profileImage = document.querySelector('.profile__image');
+      profileImage.style.backgroundImage = `url('${userData.avatar}')`;
+      closeModal(popupEditAvatar);
+    })
+    .catch((err) => {
+      console.error('Ошибка при обновлении аватара:', err);
+    });
+});
+
+
+function isValidImageUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = url;
+
+    img.onload = () => resolve(true); // Изображение загружено
+    img.onerror = () => resolve(false); // Ошибка загрузки
+  });
+}
+//
+//Добавим функцию валидации для поля ввода аватара:
+
+async function validateAvatarUrl(input, errorElement) {
+  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+  if (!input.value) {
+    errorElement.textContent = 'Это поле обязательно для заполнения';
+    return false;
+  } else if (!urlPattern.test(input.value)) {
+    errorElement.textContent = 'Введите корректный URL';
+    return false;
+  } else {
+    try {
+      const isValidImage = await isValidImageUrl(input.value);
+      if (!isValidImage) {
+        errorElement.textContent = 'Указанный URL не ведёт на изображение';
+        return false;
+      } else {
+        errorElement.textContent = '';
+        return true;
+      }
+    } catch (error) {
+      errorElement.textContent = 'Не удалось проверить URL';
+      return false;
+    }
+  }
+}

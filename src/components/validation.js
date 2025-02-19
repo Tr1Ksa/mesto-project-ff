@@ -102,3 +102,4 @@ export function validateLink(linkInput, errorLink) {
     return true;
   }
 };
+
