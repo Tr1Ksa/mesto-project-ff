@@ -95,23 +95,7 @@ function handleImageClick(event) {
   openModal(popupTypeImage);
 }
 
-/* // Обработчик отправки формы редактирования профиля
-function handleEditProfileFormSubmit(evt) {
-  evt.preventDefault();
-
-  const name = nameInput.value;
-  const job = jobInput.value;
-
-  updateProfile(name, job)
-    .then((userData) => {
-      updateProfileInfo(userData.name, userData.about);
-      closeModal(popupTypeEdit);
-    })
-    .catch((err) => {
-      console.error('Ошибка при обновлении профиля:', err);
-    });
-} */
-
+ // Обработчик отправки формы редактирования профиля
     function handleEditProfileFormSubmit(evt) {
       evt.preventDefault();
     
@@ -151,29 +135,6 @@ openAddButton.addEventListener('click', () => {
 });
 
 // Обработчик отправки формы добавления карточки
-/* newCardForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-
-  const newCard = {
-    name: newCardNameInput.value,
-    link: newCardLinkInput.value
-  };
-
-  addNewCard(newCard.name, newCard.link)
-    .then((newCardResponse) => {
-      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, handleImageClick, currentUserId);
-      cardsList.prepend(cardElement);
-      closeModal(popupNewCard);
-      newCardForm.reset();
-      const submitButton = newCardForm.querySelector('.popup__button');
-      submitButton.disabled = true;
-      submitButton.classList.add(enableValidation.inactiveButtonClass);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}); */
-
 newCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
@@ -253,22 +214,6 @@ Promise.all([getUserInfo(), getInitialCards()])
 const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
 const confirmDeleteForm = confirmDeletePopup.querySelector('.popup__form');
 
-/* confirmDeleteForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  const cardId = confirmDeletePopup.dataset.cardId;
-
-  deleteCardApi(cardId)
-    .then(() => {
-      const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
-      if (cardElement) {
-        cardElement.remove();
-      }
-      closeModal(confirmDeletePopup);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}); */
 confirmDeleteForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
@@ -324,21 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Обработчик для отправки формы редактирования аватара
-/* editAvatarForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-
-  const avatarUrl = avatarUrlInput.value;
-
-  updateAvatar(avatarUrl)
-    .then((userData) => {
-      const profileImage = document.querySelector('.profile__image');
-      profileImage.style.backgroundImage = `url('${userData.avatar}')`;
-      closeModal(popupEditAvatar);
-    })
-    .catch((err) => {
-      console.error('Ошибка при обновлении аватара:', err);
-    });
-}); */
 editAvatarForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
