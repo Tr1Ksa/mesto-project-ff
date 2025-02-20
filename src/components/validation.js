@@ -11,22 +11,22 @@ export const enableValidation = {
 };
 
 // Функция для очистки ошибок валидации и сброса состояния кнопки
-export function clearValidation(formElement, enableValidation) {
-  const errorElements = formElement.querySelectorAll(`.${enableValidation.errorClass}`);
-  errorElements.forEach(errorElement => {
-    errorElement.textContent = '';
-  });
+  export function clearValidation(formElement, enableValidation) {
+    const errorElements = formElement.querySelectorAll(`.${enableValidation.errorClass}`);
+    errorElements.forEach(errorElement => {
+      errorElement.textContent = '';
+    });
   
-  const inputElements = formElement.querySelectorAll(enableValidation.inputSelector);
-  inputElements.forEach(inputElement => {
-    inputElement.classList.remove(enableValidation.inputErrorClass);
-    inputElement.classList.remove('popup__input_type_error');
-  });
+    const inputElements = formElement.querySelectorAll(enableValidation.inputSelector);
+    inputElements.forEach(inputElement => {
+      inputElement.classList.remove(enableValidation.inputErrorClass);
+      inputElement.classList.remove('popup__input_type_error'); // Убираем класс ошибки
+    });
   
-  const submitButton = formElement.querySelector(enableValidation.submitButtonSelector);
-  submitButton.disabled = true;
-  submitButton.classList.add(enableValidation.inactiveButtonClass);
-}
+    const submitButton = formElement.querySelector(enableValidation.submitButtonSelector);
+    submitButton.disabled = true;
+    submitButton.classList.add(enableValidation.inactiveButtonClass);
+  }
 
 // Функция для валидации имени
 export function validateName(nameInput, nameError) {
@@ -36,19 +36,19 @@ export function validateName(nameInput, nameError) {
 
   if (length === 0) {
     nameError.textContent = 'Вы пропустили это поле.';
-    nameInput.classList.add('popup__input_type_error');
+    nameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (!regex.test(value)) {
     nameError.textContent = nameInput.dataset.error;
-    nameInput.classList.add('popup__input_type_error');
+    nameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (length < 2 || length > 40) {
     nameError.textContent = `Минимальное количество символов 2. Длина текста сейчас: ${length} символов.`;
-    nameInput.classList.add('popup__input_type_error');
+    nameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else {
     nameError.textContent = '';
-    nameInput.classList.remove('popup__input_type_error');
+    nameInput.classList.remove('popup__input_type_error'); // Убираем класс ошибки
     return true;
   }
 }
@@ -60,12 +60,15 @@ export function validateDescription(descriptionInput, descriptionError) {
 
   if (length === 0) {
     descriptionError.textContent = 'Вы пропустили это поле.';
+    descriptionInput.classList.add('popup__input_type_error');
     return false;
   } else if (length < 2 || length > 200) {
     descriptionError.textContent = `Минимальное количество символов 2. Длина текста сейчас: ${length} символов.`;
+    descriptionInput.classList.add('popup__input_type_error');
     return false;
   } else {
     descriptionError.textContent = '';
+    descriptionInput.classList.remove('popup__input_type_error');
     return true;
   }
 }
@@ -78,19 +81,20 @@ export function validatePlaceName(placeNameInput, errorPlaceName) {
 
   if (length === 0) {
     errorPlaceName.textContent = 'Вы пропустили это поле.';
-    placeNameInput.classList.add('popup__input_type_error');
+    placeNameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (length < 2 || length > 30) {
     errorPlaceName.textContent = `Минимальное количество символов 2. Длина текста сейчас: ${length} символов.`;
-    placeNameInput.classList.add('popup__input_type_error');
+    placeNameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (!nameRegex.test(value)) {
     errorPlaceName.textContent = placeNameInput.dataset.error;
-    placeNameInput.classList.add('popup__input_type_error');
+    placeNameInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else {
     errorPlaceName.textContent = '';
-    placeNameInput.classList.remove('popup__input_type_error');
+    placeNameInput.classList.remove('popup__input_type_error'); // Убираем класс ошибки
+    return true;
   }
 }
 
@@ -101,15 +105,16 @@ export function validateLink(linkInput, errorLink) {
 
   if (length === 0) {
     errorLink.textContent = 'Введите адрес сайта.';
-    linkInput.classList.add('popup__input_type_error');
+    linkInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (!linkInput.checkValidity()) {
     errorLink.textContent = linkInput.validationMessage;
-    linkInput.classList.add('popup__input_type_error');
+    linkInput.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else {
     errorLink.textContent = '';
-    linkInput.classList.remove('popup__input_type_error');
+    linkInput.classList.remove('popup__input_type_error'); // Убираем класс ошибки
     return true;
   }
 }
+
