@@ -31,7 +31,7 @@ export const getInitialCards = () => {
       return Promise.reject(`Ошибка: ${res.status}`);
     })
     .then(data => {
-      console.log(data); // Логируем данные, чтобы убедиться, что лайки приходят
+      console.log(data);
       return data;
     });
 };

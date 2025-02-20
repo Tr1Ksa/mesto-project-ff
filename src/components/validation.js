@@ -16,12 +16,13 @@ export function clearValidation(formElement, enableValidation) {
   errorElements.forEach(errorElement => {
     errorElement.textContent = '';
   });
-
+  
   const inputElements = formElement.querySelectorAll(enableValidation.inputSelector);
   inputElements.forEach(inputElement => {
     inputElement.classList.remove(enableValidation.inputErrorClass);
+    inputElement.classList.remove('popup__input_type_error');
   });
-
+  
   const submitButton = formElement.querySelector(enableValidation.submitButtonSelector);
   submitButton.disabled = true;
   submitButton.classList.add(enableValidation.inactiveButtonClass);
@@ -35,15 +36,19 @@ export function validateName(nameInput, nameError) {
 
   if (length === 0) {
     nameError.textContent = 'Вы пропустили это поле.';
+    nameInput.classList.add('popup__input_type_error');
     return false;
   } else if (!regex.test(value)) {
     nameError.textContent = nameInput.dataset.error;
+    nameInput.classList.add('popup__input_type_error');
     return false;
   } else if (length < 2 || length > 40) {
     nameError.textContent = `Минимальное количество символов 2. Длина текста сейчас: ${length} символов.`;
+    nameInput.classList.add('popup__input_type_error');
     return false;
   } else {
     nameError.textContent = '';
+    nameInput.classList.remove('popup__input_type_error');
     return true;
   }
 }
@@ -73,16 +78,19 @@ export function validatePlaceName(placeNameInput, errorPlaceName) {
 
   if (length === 0) {
     errorPlaceName.textContent = 'Вы пропустили это поле.';
+    placeNameInput.classList.add('popup__input_type_error');
     return false;
   } else if (length < 2 || length > 30) {
     errorPlaceName.textContent = `Минимальное количество символов 2. Длина текста сейчас: ${length} символов.`;
+    placeNameInput.classList.add('popup__input_type_error');
     return false;
   } else if (!nameRegex.test(value)) {
     errorPlaceName.textContent = placeNameInput.dataset.error;
+    placeNameInput.classList.add('popup__input_type_error');
     return false;
   } else {
     errorPlaceName.textContent = '';
-    return true;
+    placeNameInput.classList.remove('popup__input_type_error');
   }
 }
 
@@ -93,13 +101,15 @@ export function validateLink(linkInput, errorLink) {
 
   if (length === 0) {
     errorLink.textContent = 'Введите адрес сайта.';
+    linkInput.classList.add('popup__input_type_error');
     return false;
   } else if (!linkInput.checkValidity()) {
     errorLink.textContent = linkInput.validationMessage;
+    linkInput.classList.add('popup__input_type_error');
     return false;
   } else {
     errorLink.textContent = '';
+    linkInput.classList.remove('popup__input_type_error');
     return true;
   }
-};
-
+}

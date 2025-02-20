@@ -301,22 +301,27 @@ async function validateAvatarUrl(input, errorElement) {
 
   if (!input.value) {
     errorElement.textContent = 'Это поле обязательно для заполнения';
+    input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else if (!urlPattern.test(input.value)) {
     errorElement.textContent = 'Введите корректный URL';
+    input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
     return false;
   } else {
     try {
       const isValidImage = await isValidImageUrl(input.value);
       if (!isValidImage) {
         errorElement.textContent = 'Указанный URL не ведёт на изображение';
+        input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
         return false;
       } else {
         errorElement.textContent = '';
+        input.classList.remove('popup__input_type_error'); // Убираем класс ошибки
         return true;
       }
     } catch (error) {
       errorElement.textContent = 'Не удалось проверить URL';
+      input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
       return false;
     }
   }

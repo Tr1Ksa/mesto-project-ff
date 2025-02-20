@@ -48,13 +48,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   // Если карточка принадлежит текущему пользователю, добавляем обработчик удаления
   if (item.owner && item.owner._id === currentUserId) {
     deleteButton.addEventListener('click', () => {
-      const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
-      if (confirmDeletePopup) {
-        openModal(confirmDeletePopup);
-        confirmDeletePopup.dataset.cardId = item._id;
-      } else {
-        console.error('Модальное окно подтверждения удаления не найдено');
-      }
+      deleteHandler(item._id);
     });
   } else {
     // Если карточка не принадлежит пользователю, удаляем кнопку удаления
@@ -63,7 +57,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 
   // Добавляем обработчики событий для лайка и клика по изображению
   likeButton.addEventListener('click', () => likeHandler(item._id, likeButton, likeCount));
-  cardImage.addEventListener('click', imageClickHandler);
+  cardImage.addEventListener('click', () => imageClickHandler(item));
 
   // Возвращаем созданную карточку
   return cardElement;
