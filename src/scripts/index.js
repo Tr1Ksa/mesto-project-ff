@@ -5,7 +5,7 @@ import { initialCards } from '../components/cards.js';
 import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
-import { enableValidation, clearValidation, validateName, validateDescription, validatePlaceName, validateLink } from '../components/validation.js';
+import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
 
 // DOM-элементы
@@ -54,8 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const descriptionError = form.querySelector('.popup__error_type_description');
 
   const validateForm = () => {
-    const isNameValid = validateName(nameInput, nameError);
-    const isDescriptionValid = validateDescription(descriptionInput, descriptionError);
+    const isNameValid = validateInput(nameInput, nameError, {
+      minLength: 2,
+      maxLength: 40,
+      regex: /^[a-zA-Zа-яА-Я\s-]+$/,
+      errorClass: 'popup__input_type_error'
+    });
+
+    const isDescriptionValid = validateInput(descriptionInput, descriptionError, {
+      minLength: 2,
+      maxLength: 200,
+      errorClass: 'popup__input_type_error'
+    });
+
     toggleSaveButton(form, isNameValid && isDescriptionValid);
   };
 
@@ -72,8 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorLink = form.querySelector('.popup__error_visible_link');
 
   const validateForm = () => {
-    const isPlaceNameValid = validatePlaceName(placeNameInput, errorPlaceName);
-    const isLinkValid = validateLink(linkInput, errorLink);
+    const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
+      minLength: 2,
+      maxLength: 30,
+      regex: /^[a-zA-Zа-яА-Я\s\-]+$/,
+      errorClass: 'popup__input_type_error'
+    });
+
+    const isLinkValid = validateUrl(linkInput, errorLink, {
+      errorClass: 'popup__input_type_error'
+    });
+
     toggleSaveButton(form, isPlaceNameValid && isLinkValid);
   };
 
@@ -165,22 +185,9 @@ newCardForm.addEventListener('submit', (evt) => {
     });
 });
 
-/* // Инициализация карточек
+// Инициализация карточек
 initialCards.forEach((item) => {
-  const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId, openModal); // Передаем openModal
-  cardsList.appendChild(cardElement);
-});
- */
-
-initialCards.forEach((item) => {
-  const cardElement = createCard(
-    item,
-    (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), // Передаем likeCard и unlikeCard
-    deleteCard,
-    openImagePopup,
-    currentUserId,
-    openModal
-  );
+  const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal); // Передаем openModal
   cardsList.appendChild(cardElement);
 });
 
@@ -204,7 +211,7 @@ popups.forEach((popup) => {
 
 // Работа с API
 Promise.all([getUserInfo(), getInitialCards()])
-  .then(([userData, cards]) => {
+.then(([userData, cards]) => {
     currentUserId = userData._id;
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
@@ -213,13 +220,13 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
-      const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId, openModal);
-      cardsList.appendChild(cardElement);
+        const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal);
+        cardsList.appendChild(cardElement);
     });
-  })
-  .catch((err) => {
+})
+.catch((err) => {
     console.log(err);
-  });
+});
 
 // Обработчик для кнопки "Да" в попапе подтверждения удаления
 const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
@@ -309,33 +316,29 @@ function isValidImageUrl(url) {
 
 // Функция валидации для поля ввода аватара
 async function validateAvatarUrl(input, errorElement) {
-  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+  const isUrlValid = validateUrl(input, errorElement, {
+    errorClass: 'popup__input_type_error'
+  });
 
-  if (!input.value) {
-    errorElement.textContent = 'Это поле обязательно для заполнения';
-    input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
+  if (!isUrlValid) {
     return false;
-  } else if (!urlPattern.test(input.value)) {
-    errorElement.textContent = 'Введите корректный URL';
-    input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
-    return false;
-  } else {
-    try {
-      const isValidImage = await isValidImageUrl(input.value);
-      if (!isValidImage) {
-        errorElement.textContent = 'Указанный URL не ведёт на изображение';
-        input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
-        return false;
-      } else {
-        errorElement.textContent = '';
-        input.classList.remove('popup__input_type_error'); // Убираем класс ошибки
-        return true;
-      }
-    } catch (error) {
-      errorElement.textContent = 'Не удалось проверить URL';
-      input.classList.add('popup__input_type_error'); // Добавляем класс ошибки
+  }
+
+  try {
+    const isValidImage = await isValidImageUrl(input.value);
+    if (!isValidImage) {
+      errorElement.textContent = 'Указанный URL не ведёт на изображение';
+      input.classList.add('popup__input_type_error');
       return false;
+    } else {
+      errorElement.textContent = '';
+      input.classList.remove('popup__input_type_error');
+      return true;
     }
+  } catch (error) {
+    errorElement.textContent = 'Не удалось проверить URL';
+    input.classList.add('popup__input_type_error');
+    return false;
   }
 }
 

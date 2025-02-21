@@ -1,7 +1,5 @@
 // card.js
 
-import { likeCard, unlikeCard } from './api.js';
-
 // Функция для создания карточки
 export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal) { // Добавляем openModal как параметр
   // Находим шаблон карточки в DOM
@@ -49,7 +47,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   // Если карточка принадлежит текущему пользователю, добавляем обработчик удаления
   if (item.owner && item.owner._id === currentUserId) {
     deleteButton.addEventListener('click', () => {
-      deleteHandler(item._id, openModal); // Передаем openModal в deleteHandler
+      deleteHandler(item._id, openModal);
     });
   } else {
     deleteButton.remove();
@@ -63,32 +61,30 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   return cardElement;
 }
 
-
-
 // Функция для обработки клика по лайку
-export function handleLikeClick(cardId, likeButton, likeCount) {
+export function handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard) {
   const isLiked = likeButton.classList.contains('card__like-button_is-active');
 
   if (isLiked) {
-    // Если лайк уже поставлен, убираем его
-    unlikeCard(cardId)
-      .then((updatedCard) => {
-        likeButton.classList.remove('card__like-button_is-active');
-        likeCount.textContent = updatedCard.likes.length;
-      })
-      .catch((err) => {
-        console.error('Ошибка при снятии лайка:', err);
-      });
+      // Если лайк уже поставлен, убираем его
+      unlikeCard(cardId)
+          .then((updatedCard) => {
+              likeButton.classList.remove('card__like-button_is-active');
+              likeCount.textContent = updatedCard.likes.length;
+          })
+          .catch((err) => {
+              console.error('Ошибка при снятии лайка:', err);
+          });
   } else {
-    // Если лайк не поставлен, добавляем его
-    likeCard(cardId)
-      .then((updatedCard) => {
-        likeButton.classList.add('card__like-button_is-active');
-        likeCount.textContent = updatedCard.likes.length;
-      })
-      .catch((err) => {
-        console.error('Ошибка при постановке лайка:', err);
-      });
+      // Если лайк не поставлен, добавляем его
+      likeCard(cardId)
+          .then((updatedCard) => {
+              likeButton.classList.add('card__like-button_is-active');
+              likeCount.textContent = updatedCard.likes.length;
+          })
+          .catch((err) => {
+              console.error('Ошибка при постановке лайка:', err);
+          });
   }
 }
 
