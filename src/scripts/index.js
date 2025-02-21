@@ -1,14 +1,14 @@
 //index.js
 
+// Импорт стилей и модулей
 import '../pages/index.css';
-import { initialCards } from '../components/cards.js';
 import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
 import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
 
-// DOM-элементы
+// Получение DOM-элементов
 const cardsList = document.querySelector('.places__list'); // Список карточек
 const popups = document.querySelectorAll('.popup'); // Все модальные окна
 const popupTypeEdit = document.querySelector('.popup_type_edit'); // Модальное окно редактирования профиля
@@ -27,7 +27,7 @@ const newCardLinkInput = newCardForm.querySelector('.popup__input_type_url'); //
 
 let currentUserId; // ID текущего пользователя
 
-// Функция для обновления данных профиля на странице
+// Функции для работы с профилем
 function updateProfileInfo(name, job) {
   profileTitle.textContent = name;
   profileDescription.textContent = job;
@@ -183,12 +183,6 @@ newCardForm.addEventListener('submit', (evt) => {
       // Возвращаем исходный текст кнопки
       toggleButtonLoadingState(saveButton, false, defaultText);
     });
-});
-
-// Инициализация карточек
-initialCards.forEach((item) => {
-  const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal); // Передаем openModal
-  cardsList.appendChild(cardElement);
 });
 
 // Обработчик открытия модального окна редактирования профиля

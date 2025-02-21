@@ -2,7 +2,6 @@
 
 // Функция открытия модального окна
 export function openModal(popup) {
-  console.log('Открытие модального окна'); // Добавьте эту строку
   popup.classList.add('popup_is-opened');
   popup.classList.remove('popup_is-animated');
   document.addEventListener('keydown', handleEscape);
