@@ -6,7 +6,7 @@ import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
 import { enableValidation, clearValidation, validateName, validateDescription, validatePlaceName, validateLink } from '../components/validation.js';
-import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, updateAvatar } from '../components/api.js';
+import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
 
 // DOM-элементы
 const cardsList = document.querySelector('.places__list'); // Список карточек
@@ -165,9 +165,22 @@ newCardForm.addEventListener('submit', (evt) => {
     });
 });
 
-// Инициализация карточек
+/* // Инициализация карточек
 initialCards.forEach((item) => {
-  const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup);
+  const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId, openModal); // Передаем openModal
+  cardsList.appendChild(cardElement);
+});
+ */
+
+initialCards.forEach((item) => {
+  const cardElement = createCard(
+    item,
+    (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), // Передаем likeCard и unlikeCard
+    deleteCard,
+    openImagePopup,
+    currentUserId,
+    openModal
+  );
   cardsList.appendChild(cardElement);
 });
 
@@ -190,7 +203,6 @@ popups.forEach((popup) => {
 });
 
 // Работа с API
-
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cards]) => {
     currentUserId = userData._id;
@@ -201,7 +213,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
-      const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId);
+      const cardElement = createCard(item, handleLikeClick, deleteCard, openImagePopup, currentUserId, openModal);
       cardsList.appendChild(cardElement);
     });
   })
@@ -337,3 +349,29 @@ function toggleButtonLoadingState(button, isLoading, defaultText, loadingText = 
     button.disabled = false;
   }
 }
+
+// Инициализация обработчика подтверждения удаления карточки
+document.addEventListener('DOMContentLoaded', () => {
+  const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
+  if (confirmDeletePopup) {
+    const confirmButton = confirmDeletePopup.querySelector('.popup__confirm-button');
+    if (confirmButton) {
+      confirmButton.addEventListener('click', () => {
+        const cardId = confirmDeletePopup.dataset.cardId;
+        if (cardId) {
+          deleteCardApi(cardId)
+            .then(() => {
+              const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+              if (cardElement) {
+                cardElement.remove();
+              }
+              closeModal(confirmDeletePopup);
+            })
+            .catch((err) => {
+              console.error('Ошибка при удалении карточки:', err);
+            });
+        }
+      });
+    }
+  }
+});
