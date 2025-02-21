@@ -7,6 +7,7 @@ import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
 import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
+import { toggleButtonLoadingState } from '../components/utils.js';
 
 // Получение DOM-элементов
 const cardsList = document.querySelector('.places__list'); // Список карточек
@@ -24,6 +25,7 @@ const profileTitle = document.querySelector('.profile__title'); // Заголо�
 const profileDescription = document.querySelector('.profile__description'); // Описание профиля
 const newCardNameInput = newCardForm.querySelector('.popup__input_type_card-name'); // Поле ввода названия карточки
 const newCardLinkInput = newCardForm.querySelector('.popup__input_type_url'); // Поле ввода ссылки на карточку
+const popupImage = document.querySelector('.popup__image');
 
 let currentUserId; // ID текущего пользователя
 
@@ -107,7 +109,6 @@ function openImagePopup(event) {
   const cardTitle = card.querySelector('.card__title').textContent;
   const cardImageSrc = event.target.src;
 
-  const popupImage = document.querySelector('.popup__image');
   popupImage.src = cardImageSrc;
   popupImage.alt = cardTitle;
 
@@ -155,7 +156,7 @@ openAddButton.addEventListener('click', () => {
 });
 
 // Обработчик отправки формы добавления карточки
-newCardForm.addEventListener('submit', (evt) => {
+/* newCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
   const saveButton = newCardForm.querySelector('.popup__button');
@@ -171,19 +172,87 @@ newCardForm.addEventListener('submit', (evt) => {
 
   addNewCard(newCard.name, newCard.link)
     .then((newCardResponse) => {
-      const cardElement = createCard(newCardResponse, handleLikeClick, deleteCard, openImagePopup, currentUserId);
+      // Убедимся, что сервер вернул корректный ID карточки
+      if (!newCardResponse._id) {
+        throw new Error('Сервер не вернул ID карточки');
+      }
+
+      // Создаем карточку с корректными обработчиками
+      const cardElement = createCard(
+        newCardResponse,
+        (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard),
+        (cardId) => deleteCard(cardId, openModal),
+        openImagePopup,
+        currentUserId
+      );
+
+      // Добавляем карточку в DOM
       cardsList.prepend(cardElement);
+
+      // Закрываем модальное окно и сбрасываем форму
       closeModal(popupNewCard);
       newCardForm.reset();
     })
     .catch((err) => {
-      console.log(err);
+      console.error('Ошибка при добавлении карточки:', err);
     })
     .finally(() => {
       // Возвращаем исходный текст кнопки
       toggleButtonLoadingState(saveButton, false, defaultText);
     });
-});
+}); */
+
+//==============================================================================
+
+function submitAddCardForm(evt) {
+  evt.preventDefault();
+
+  const saveButton = newCardForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  toggleButtonLoadingState(saveButton, true, defaultText);
+
+  const newCard = {
+    name: newCardNameInput.value,
+    link: newCardLinkInput.value
+  };
+
+  addNewCard(newCard.name, newCard.link)
+    .then((newCardResponse) => {
+      if (!newCardResponse._id) {
+        throw new Error('Сервер не вернул ID карточки');
+      }
+
+      const cardElement = createCard(
+        newCardResponse,
+        (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard),
+        (cardId) => deleteCard(cardId, openModal),
+        openImagePopup,
+        currentUserId
+      );
+
+      cardsList.prepend(cardElement);
+      closeModal(popupNewCard);
+      newCardForm.reset();
+      clearValidation(newCardForm, enableValidation);
+    })
+    .catch((err) => {
+      console.error('Ошибка при добавлении карточки:', err);
+    })
+    .finally(() => {
+      toggleButtonLoadingState(saveButton, false, defaultText);
+    });
+}
+
+newCardForm.addEventListener('submit', submitAddCardForm);
+
+
+
+
+
+
+//===============================================================================
+
 
 // Обработчик открытия модального окна редактирования профиля
 openEditButton.addEventListener('click', () => {
@@ -197,6 +266,7 @@ openEditButton.addEventListener('click', () => {
   toggleSaveButton(editProfileForm, isNameValid && isDescriptionValid);
   openModal(popupTypeEdit);
 });
+
 
 // Обработчики для закрытия модальных окон
 popups.forEach((popup) => {
@@ -225,7 +295,7 @@ Promise.all([getUserInfo(), getInitialCards()])
 // Обработчик для кнопки "Да" в попапе подтверждения удаления
 const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
 const confirmDeleteForm = confirmDeletePopup.querySelector('.popup__form');
-
+/*
 confirmDeleteForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
@@ -240,9 +310,33 @@ confirmDeleteForm.addEventListener('submit', (evt) => {
       closeModal(confirmDeletePopup);
     })
     .catch((err) => {
-      console.log(err);
+      console.error('Ошибка при удалении карточки:', err);
     });
-});
+}); */
+
+//===============================================================================
+function submitConfirmationForm(evt) {
+  evt.preventDefault();
+
+  const cardId = confirmDeletePopup.dataset.cardId;
+
+  deleteCardApi(cardId)
+    .then(() => {
+      const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+      if (cardElement) {
+        cardElement.remove();
+      }
+      closeModal(confirmDeletePopup);
+    })
+    .catch((err) => {
+      console.error('Ошибка при удалении карточки:', err);
+    });
+}
+
+confirmDeleteForm.addEventListener('submit', submitConfirmationForm);
+
+
+//=============================================================================
 
 const editAvatarButton = document.querySelector('.profile__edit-avatar-button');
 const popupEditAvatar = document.querySelector('.popup_type_edit-avatar');
@@ -271,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Обработчик для отправки формы редактирования аватара
-editAvatarForm.addEventListener('submit', (evt) => {
+/* editAvatarForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
   const saveButton = editAvatarForm.querySelector('.popup__button');
@@ -295,7 +389,37 @@ editAvatarForm.addEventListener('submit', (evt) => {
       // Возвращаем исходный текст кнопки
       toggleButtonLoadingState(saveButton, false, defaultText);
     });
-});
+}); */
+
+//==============================================================
+
+function submitUpdateAvatarForm(evt) {
+  evt.preventDefault();
+
+  const saveButton = editAvatarForm.querySelector('.popup__button');
+  const defaultText = saveButton.textContent;
+
+  toggleButtonLoadingState(saveButton, true, defaultText);
+
+  const avatarUrl = avatarUrlInput.value;
+
+  updateAvatar(avatarUrl)
+    .then((userData) => {
+      const profileImage = document.querySelector('.profile__image');
+      profileImage.style.backgroundImage = `url('${userData.avatar}')`;
+      closeModal(popupEditAvatar);
+    })
+    .catch((err) => {
+      console.error('Ошибка при обновлении аватара:', err);
+    })
+    .finally(() => {
+      toggleButtonLoadingState(saveButton, false, defaultText);
+    });
+}
+
+editAvatarForm.addEventListener('submit', submitUpdateAvatarForm);
+
+//==============================================================
 
 // Функция для проверки, является ли URL действительным изображением
 function isValidImageUrl(url) {
@@ -333,17 +457,6 @@ async function validateAvatarUrl(input, errorElement) {
     errorElement.textContent = 'Не удалось проверить URL';
     input.classList.add('popup__input_type_error');
     return false;
-  }
-}
-
-// Функция для изменения состояния кнопки
-function toggleButtonLoadingState(button, isLoading, defaultText, loadingText = 'Сохранение...') {
-  if (isLoading) {
-    button.textContent = loadingText;
-    button.disabled = true;
-  } else {
-    button.textContent = defaultText;
-    button.disabled = false;
   }
 }
 
