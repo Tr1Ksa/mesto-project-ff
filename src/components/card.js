@@ -1,25 +1,21 @@
 // card.js
 
-/* // Функция для создания карточки
+/*   // Функция для создания карточки
 export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal) {
-  // Находим шаблон карточки в DOM
   const cardTemplate = document.querySelector('#card-template');
   if (!cardTemplate) {
     console.error('Шаблон карточки не найден!');
     return null;
   }
 
-  // Клонируем содержимое шаблона карточки
   const cardElement = cardTemplate.content.querySelector('.places__item').cloneNode(true);
 
-  // Находим элементы карточки
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likeButton = cardElement.querySelector('.card__like-button');
   const likeCount = cardElement.querySelector('.card__like-count');
 
-  // Проверяем, что все элементы найдены
   if (!cardImage || !cardTitle || !deleteButton || !likeButton || !likeCount) {
     console.error('Один из элементов карточки не найден!');
     return null;
@@ -57,7 +53,6 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   likeButton.addEventListener('click', () => likeHandler(item._id, likeButton, likeCount));
   cardImage.addEventListener('click', imageClickHandler);
 
-  // Возвращаем созданную карточку
   return cardElement;
 }
 
@@ -65,33 +60,23 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 export function handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard) {
   const isLiked = likeButton.classList.contains('card__like-button_is-active');
 
-  if (isLiked) {
-      // Если лайк уже поставлен, убираем его
-      unlikeCard(cardId)
-          .then((updatedCard) => {
-              likeButton.classList.remove('card__like-button_is-active');
-              likeCount.textContent = updatedCard.likes.length;
-          })
-          .catch((err) => {
-              console.error('Ошибка при снятии лайка:', err);
-          });
-  } else {
-      // Если лайк не поставлен, добавляем его
-      likeCard(cardId)
-          .then((updatedCard) => {
-              likeButton.classList.add('card__like-button_is-active');
-              likeCount.textContent = updatedCard.likes.length;
-          })
-          .catch((err) => {
-              console.error('Ошибка при постановке лайка:', err);
-          });
-  }
+  const apiCall = isLiked ? unlikeCard(cardId) : likeCard(cardId);
+
+  apiCall
+    .then((updatedCard) => {
+      likeButton.classList.toggle('card__like-button_is-active');
+      likeCount.textContent = updatedCard.likes.length;
+    })
+    .catch((err) => {
+      console.error('Ошибка при обработке лайка:', err);
+    });
 }
 
 // Функция удаления карточки
 export function deleteCard(cardId, openModal) {
   const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
   if (confirmDeletePopup) {
+    // Открываем модальное окно и передаем ID карточки
     openModal(confirmDeletePopup);
     confirmDeletePopup.dataset.cardId = cardId;
   } else {
@@ -99,15 +84,26 @@ export function deleteCard(cardId, openModal) {
   }
 } */
 
-  // Функция для создания карточки
-export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal) {
-  const cardTemplate = document.querySelector('#card-template');
+// card.js
+
+// Глобальная переменная для хранения шаблона карточки
+const cardTemplate = document.querySelector('#card-template');
+
+// Функция для клонирования шаблона карточки
+function getCardTemplate() {
   if (!cardTemplate) {
     console.error('Шаблон карточки не найден!');
     return null;
   }
+  return cardTemplate.content.querySelector('.places__item').cloneNode(true);
+}
 
-  const cardElement = cardTemplate.content.querySelector('.places__item').cloneNode(true);
+// Функция для создания карточки
+export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal) {
+  const cardElement = getCardTemplate();
+  if (!cardElement) {
+    return null;
+  }
 
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
