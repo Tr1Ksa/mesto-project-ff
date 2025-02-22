@@ -5,7 +5,7 @@ import '../pages/index.css';
 import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
-import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
+/* import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js'; */
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
 import { toggleButtonLoadingState } from '../components/utils.js';
 
@@ -29,6 +29,13 @@ const popupImage = document.querySelector('.popup__image');
 
 let currentUserId; // ID текущего пользователя
 
+//==================================================================================
+import { validationConfig, clearValidation, enableValidation,  validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
+
+// Включение валидации всех форм на странице
+enableValidation(validationConfig);
+//==================================================================================
+
 // Функции для работы с профилем
 function updateProfileInfo(name, job) {
   profileTitle.textContent = name;
@@ -48,7 +55,7 @@ function toggleSaveButton(form, isValid) {
 }
 
 // Валидация формы «Редактировать профиль»
-document.addEventListener('DOMContentLoaded', () => {
+/* document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['edit-profile'];
   const nameInput = form.elements.name;
   const descriptionInput = form.elements.description;
@@ -74,9 +81,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
   nameInput.addEventListener('input', validateForm);
   descriptionInput.addEventListener('input', validateForm);
+}); */
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.forms['edit-profile'];
+  const nameInput = form.elements.name;
+  const descriptionInput = form.elements.description;
+  const nameError = form.querySelector('.popup__error_type_name');
+  const descriptionError = form.querySelector('.popup__error_type_description');
+
+  const validateForm = () => {
+    const isNameValid = validateName(nameInput, nameError);
+    const isDescriptionValid = validateDescription(descriptionInput, descriptionError);
+    toggleSaveButton(form, isNameValid && isDescriptionValid);
+  };
+
+  nameInput.addEventListener('input', validateForm);
+  descriptionInput.addEventListener('input', validateForm);
 });
 
 // Валидация формы «Новое место»
+
+/* document.addEventListener('DOMContentLoaded', () => {
+  const form = document.forms['new-place'];
+  const placeNameInput = form.elements['place-name'];
+  const linkInput = form.elements['link'];
+  const errorPlaceName = form.querySelector('.popup__error_visible_place-name');
+  const errorLink = form.querySelector('.popup__error_visible_link');
+
+  const validateForm = () => {
+    const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
+      minLength: 2,
+      maxLength: 30,
+      regex: /^[a-zA-Zа-яА-Я\s\-]+$/,
+      errorClass: 'popup__input_type_error'
+    });
+
+    const isLinkValid = validateUrl(linkInput, errorLink, {
+      errorClass: 'popup__input_type_error'
+    });
+
+    toggleSaveButton(form, isPlaceNameValid && isLinkValid);
+  };
+
+  placeNameInput.addEventListener('input', validateForm);
+  linkInput.addEventListener('input', validateForm);
+}); */
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['new-place'];
   const placeNameInput = form.elements['place-name'];
@@ -146,12 +195,27 @@ function handleEditProfileFormSubmit(evt) {
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
 // Обработчик открытия модального окна добавления карточки
-openAddButton.addEventListener('click', () => {
+/* openAddButton.addEventListener('click', () => {
   newCardForm.reset();
   const submitButton = newCardForm.querySelector('.popup__button');
   submitButton.disabled = true;
   submitButton.classList.add(enableValidation.inactiveButtonClass);
   clearValidation(newCardForm, enableValidation);
+  openModal(popupNewCard);
+}); */
+openAddButton.addEventListener('click', () => {
+  // Сбрасываем форму
+  newCardForm.reset();
+
+  // Сбрасываем ошибки валидации
+  clearValidation(newCardForm, validationConfig);
+
+  // Деактивируем кнопку отправки
+  const submitButton = newCardForm.querySelector('.popup__button');
+  submitButton.disabled = true;
+  submitButton.classList.add(validationConfig.inactiveButtonClass);
+
+  // Открываем модальное окно
   openModal(popupNewCard);
 });
 
@@ -248,14 +312,12 @@ newCardForm.addEventListener('submit', submitAddCardForm);
 
 
 
-
-
-
 //===============================================================================
 
 
 // Обработчик открытия модального окна редактирования профиля
-openEditButton.addEventListener('click', () => {
+
+/* openEditButton.addEventListener('click', () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
   clearValidation(editProfileForm, enableValidation);
@@ -265,8 +327,27 @@ openEditButton.addEventListener('click', () => {
   const isDescriptionValid = validateDescription(jobInput, descriptionError);
   toggleSaveButton(editProfileForm, isNameValid && isDescriptionValid);
   openModal(popupTypeEdit);
-});
+}); */
 
+openEditButton.addEventListener('click', () => {
+  // Заполняем поля формы текущими значениями профиля
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
+
+  // Сбрасываем ошибки валидации
+  clearValidation(editProfileForm, validationConfig);
+
+  // Проверяем валидность полей и активируем/деактивируем кнопку отправки
+  const nameError = editProfileForm.querySelector('.popup__error_type_name');
+  const descriptionError = editProfileForm.querySelector('.popup__error_type_description');
+  const isNameValid = validateName(nameInput, nameError);
+  const isDescriptionValid = validateDescription(jobInput, descriptionError);
+  toggleSaveButton(editProfileForm, isNameValid && isDescriptionValid);
+
+  // Открываем модальное окно
+  openModal(popupTypeEdit);
+});
+//===============================================================================================
 
 // Обработчики для закрытия модальных окон
 popups.forEach((popup) => {
@@ -291,6 +372,8 @@ Promise.all([getUserInfo(), getInitialCards()])
 .catch((err) => {
     console.log(err);
 });
+
+//==================================================================================================
 
 // Обработчик для кнопки "Да" в попапе подтверждения удаления
 const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
@@ -344,11 +427,29 @@ const editAvatarForm = document.querySelector('.popup__form[name="edit-avatar"]'
 const avatarUrlInput = editAvatarForm.querySelector('.popup__input_type_avatar-url');
 
 // Обработчик для открытия модального окна при клике на иконку редактирования аватара
-editAvatarButton.addEventListener('click', () => {
+
+/* editAvatarButton.addEventListener('click', () => {
   editAvatarForm.reset();
   clearValidation(editAvatarForm, enableValidation);
   openModal(popupEditAvatar);
+}); */
+editAvatarButton.addEventListener('click', () => {
+  // Сбрасываем форму
+  editAvatarForm.reset();
+
+  // Очищаем ошибки валидации
+  clearValidation(editAvatarForm, validationConfig);
+
+  // Деактивируем кнопку отправки формы
+  const submitButton = editAvatarForm.querySelector('.popup__button');
+  submitButton.disabled = true;
+  submitButton.classList.add(validationConfig.inactiveButtonClass);
+
+  // Открываем модальное окно
+  openModal(popupEditAvatar);
 });
+
+//======================================================================================
 
 // Обработчик для валидации формы редактирования аватара
 document.addEventListener('DOMContentLoaded', () => {
