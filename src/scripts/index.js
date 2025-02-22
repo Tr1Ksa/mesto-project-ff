@@ -5,7 +5,7 @@ import '../pages/index.css';
 import { openModal, closeModal } from '../components/modal.js';
 import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
 import { closePopupByClick } from '../components/modal.js';
-/* import { enableValidation, clearValidation, validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js'; */
+import { validationConfig, clearValidation, enableValidation,  validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
 import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
 import { toggleButtonLoadingState } from '../components/utils.js';
 
@@ -29,12 +29,8 @@ const popupImage = document.querySelector('.popup__image');
 
 let currentUserId; // ID текущего пользователя
 
-//==================================================================================
-import { validationConfig, clearValidation, enableValidation,  validateInput, validateName, validateDescription, validateUrl } from '../components/validation.js';
-
 // Включение валидации всех форм на странице
 enableValidation(validationConfig);
-//==================================================================================
 
 // Функции для работы с профилем
 function updateProfileInfo(name, job) {
@@ -55,7 +51,6 @@ function toggleSaveButton(form, isValid) {
 }
 
 // Валидация формы «Редактировать профиль»
-
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['edit-profile'];
   const nameInput = form.elements.name;
@@ -142,79 +137,22 @@ function handleEditProfileFormSubmit(evt) {
 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
-//==============================================================================
-
-// Обработчик открытия модального окна добавления карточки (старый код)
-/* openAddButton.addEventListener('click', () => {
-  newCardForm.reset();
-  const submitButton = newCardForm.querySelector('.popup__button');
-  submitButton.disabled = true;
-  submitButton.classList.add(enableValidation.inactiveButtonClass);
-  clearValidation(newCardForm, enableValidation);
-  openModal(popupNewCard);
-}); */
-
-//=============================================================================
-
-// Обработчик открытия модального окна добавления карточки (новое)
+// Обработчик открытия модального окна добавления карточки
 openAddButton.addEventListener('click', () => {
-  newCardForm.reset();
-  clearValidation(newCardForm, validationConfig);
-  const submitButton = newCardForm.querySelector('.popup__button');
-  submitButton.disabled = true;
-  submitButton.classList.add(validationConfig.inactiveButtonClass);
+  const isFormSubmitted = newCardForm.dataset.submitted === 'true';
+
+  if (isFormSubmitted) {
+    newCardForm.reset();
+    clearValidation(newCardForm, validationConfig);
+    const submitButton = newCardForm.querySelector('.popup__button');
+    submitButton.disabled = true;
+    submitButton.classList.add(validationConfig.inactiveButtonClass);
+    delete newCardForm.dataset.submitted; // Удаляем флаг сабмита
+  }
+
   openModal(popupNewCard);
 });
 
-// Обработчик отправки формы добавления карточки
-/*newCardForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-
-  const saveButton = newCardForm.querySelector('.popup__button');
-  const defaultText = saveButton.textContent;
-
-  // Меняем текст кнопки на "Сохранение..."
-  toggleButtonLoadingState(saveButton, true, defaultText);
-
-  const newCard = {
-    name: newCardNameInput.value,
-    link: newCardLinkInput.value
-  };
-
-  addNewCard(newCard.name, newCard.link)
-    .then((newCardResponse) => {
-      // Убедимся, что сервер вернул корректный ID карточки
-      if (!newCardResponse._id) {
-        throw new Error('Сервер не вернул ID карточки');
-      }
-
-      // Создаем карточку с корректными обработчиками
-      const cardElement = createCard(
-        newCardResponse,
-        (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard),
-        (cardId) => deleteCard(cardId, openModal),
-        openImagePopup,
-        currentUserId
-      );
-
-      // Добавляем карточку в DOM
-      cardsList.prepend(cardElement);
-
-      // Закрываем модальное окно и сбрасываем форму
-      closeModal(popupNewCard);
-      newCardForm.reset();
-    })
-    .catch((err) => {
-      console.error('Ошибка при добавлении карточки:', err);
-    })
-    .finally(() => {
-      // Возвращаем исходный текст кнопки
-      toggleButtonLoadingState(saveButton, false, defaultText);
-    });
-}); */
-
-//==============================================================================
-//не удалять!!
 function submitAddCardForm(evt) {
   evt.preventDefault();
 
@@ -223,29 +161,15 @@ function submitAddCardForm(evt) {
 
   toggleButtonLoadingState(saveButton, true, defaultText);
 
-  const newCard = {
-    name: newCardNameInput.value,
-    link: newCardLinkInput.value
-  };
+  const cardName = newCardNameInput.value;
+  const cardLink = newCardLinkInput.value;
 
-  addNewCard(newCard.name, newCard.link)
-    .then((newCardResponse) => {
-      if (!newCardResponse._id) {
-        throw new Error('Сервер не вернул ID карточки');
-      }
-
-      const cardElement = createCard(
-        newCardResponse,
-        (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard),
-        (cardId) => deleteCard(cardId, openModal),
-        openImagePopup,
-        currentUserId
-      );
-
+  addNewCard(cardName, cardLink)
+    .then((cardData) => {
+      const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
-      newCardForm.reset();
-      clearValidation(newCardForm, enableValidation);
+      newCardForm.dataset.submitted = 'true'; // Устанавливаем флаг сабмита
     })
     .catch((err) => {
       console.error('Ошибка при добавлении карточки:', err);
@@ -257,17 +181,7 @@ function submitAddCardForm(evt) {
 
 newCardForm.addEventListener('submit', submitAddCardForm);
 
-
-
-
-
-
-
-//===============================================================================
-
-
 // Обработчик открытия модального окна редактирования профиля
-
 openEditButton.addEventListener('click', () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
