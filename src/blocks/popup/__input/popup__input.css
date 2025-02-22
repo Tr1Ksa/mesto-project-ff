@@ -19,10 +19,8 @@
 }
 
 .popup__input-error {
-  color: red;
-  font-size: 12px;
-  
-
+color: red;
+font-size: 12px;
 } 
 
 @media screen and (max-width: 568px) {
