@@ -55,33 +55,7 @@ function toggleSaveButton(form, isValid) {
 }
 
 // Валидация формы «Редактировать профиль»
-/* document.addEventListener('DOMContentLoaded', () => {
-  const form = document.forms['edit-profile'];
-  const nameInput = form.elements.name;
-  const descriptionInput = form.elements.description;
-  const nameError = form.querySelector('.popup__error_type_name');
-  const descriptionError = form.querySelector('.popup__error_type_description');
 
-  const validateForm = () => {
-    const isNameValid = validateInput(nameInput, nameError, {
-      minLength: 2,
-      maxLength: 40,
-      regex: /^[a-zA-Zа-яА-Я\s-]+$/,
-      errorClass: 'popup__input_type_error'
-    });
-
-    const isDescriptionValid = validateInput(descriptionInput, descriptionError, {
-      minLength: 2,
-      maxLength: 200,
-      errorClass: 'popup__input_type_error'
-    });
-
-    toggleSaveButton(form, isNameValid && isDescriptionValid);
-  };
-
-  nameInput.addEventListener('input', validateForm);
-  descriptionInput.addEventListener('input', validateForm);
-}); */
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['edit-profile'];
   const nameInput = form.elements.name;
@@ -100,32 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Валидация формы «Новое место»
-
-/* document.addEventListener('DOMContentLoaded', () => {
-  const form = document.forms['new-place'];
-  const placeNameInput = form.elements['place-name'];
-  const linkInput = form.elements['link'];
-  const errorPlaceName = form.querySelector('.popup__error_visible_place-name');
-  const errorLink = form.querySelector('.popup__error_visible_link');
-
-  const validateForm = () => {
-    const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
-      minLength: 2,
-      maxLength: 30,
-      regex: /^[a-zA-Zа-яА-Я\s\-]+$/,
-      errorClass: 'popup__input_type_error'
-    });
-
-    const isLinkValid = validateUrl(linkInput, errorLink, {
-      errorClass: 'popup__input_type_error'
-    });
-
-    toggleSaveButton(form, isPlaceNameValid && isLinkValid);
-  };
-
-  placeNameInput.addEventListener('input', validateForm);
-  linkInput.addEventListener('input', validateForm);
-}); */
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['new-place'];
   const placeNameInput = form.elements['place-name'];
@@ -195,27 +143,12 @@ function handleEditProfileFormSubmit(evt) {
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
 // Обработчик открытия модального окна добавления карточки
-/* openAddButton.addEventListener('click', () => {
-  newCardForm.reset();
-  const submitButton = newCardForm.querySelector('.popup__button');
-  submitButton.disabled = true;
-  submitButton.classList.add(enableValidation.inactiveButtonClass);
-  clearValidation(newCardForm, enableValidation);
-  openModal(popupNewCard);
-}); */
 openAddButton.addEventListener('click', () => {
-  // Сбрасываем форму
   newCardForm.reset();
-
-  // Сбрасываем ошибки валидации
   clearValidation(newCardForm, validationConfig);
-
-  // Деактивируем кнопку отправки
   const submitButton = newCardForm.querySelector('.popup__button');
   submitButton.disabled = true;
   submitButton.classList.add(validationConfig.inactiveButtonClass);
-
-  // Открываем модальное окно
   openModal(popupNewCard);
 });
 
@@ -427,25 +360,12 @@ const editAvatarForm = document.querySelector('.popup__form[name="edit-avatar"]'
 const avatarUrlInput = editAvatarForm.querySelector('.popup__input_type_avatar-url');
 
 // Обработчик для открытия модального окна при клике на иконку редактирования аватара
-
-/* editAvatarButton.addEventListener('click', () => {
-  editAvatarForm.reset();
-  clearValidation(editAvatarForm, enableValidation);
-  openModal(popupEditAvatar);
-}); */
 editAvatarButton.addEventListener('click', () => {
-  // Сбрасываем форму
   editAvatarForm.reset();
-
-  // Очищаем ошибки валидации
   clearValidation(editAvatarForm, validationConfig);
-
-  // Деактивируем кнопку отправки формы
   const submitButton = editAvatarForm.querySelector('.popup__button');
   submitButton.disabled = true;
   submitButton.classList.add(validationConfig.inactiveButtonClass);
-
-  // Открываем модальное окно
   openModal(popupEditAvatar);
 });
 
