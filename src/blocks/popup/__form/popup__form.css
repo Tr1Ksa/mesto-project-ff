@@ -1,3 +1,10 @@
-.popup__form {
+/* .popup__form {
   margin-top: 27px;
+} */
+
+
+.popup__form {
+  display: grid;
+  margin-top: 27px;
+  justify-content: space-between;
 }
