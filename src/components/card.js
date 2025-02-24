@@ -56,10 +56,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   } else {
     deleteButton.remove();
   }
-  console.log('Карточка:', item);
-console.log('Владелец:', item.owner ? item.owner._id : 'Нет владельца');
-console.log('Текущий пользователь:', currentUserId);
-//====================================================================
+  
   // Добавляем обработчики событий для лайка и клика по изображению
   likeButton.addEventListener('click', () => likeHandler(item._id, likeButton, likeCount));
   cardImage.addEventListener('click', imageClickHandler);

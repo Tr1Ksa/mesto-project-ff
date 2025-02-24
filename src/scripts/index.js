@@ -39,7 +39,7 @@ function updateProfileInfo(name, job) {
 }
 
 // Функция для активации/деактивации кнопки сохранения
-function toggleSaveButton(form, isValid) {
+/* function toggleSaveButton(form, isValid) {
   const saveButton = form.querySelector('.popup__button');
   if (isValid) {
     saveButton.disabled = false;
@@ -48,7 +48,24 @@ function toggleSaveButton(form, isValid) {
     saveButton.disabled = true;
     saveButton.classList.add(enableValidation.inactiveButtonClass);
   }
+} */
+
+// Функция для управления состоянием кнопки
+function toggleSaveButton(form, isValid) {
+  const saveButton = form.querySelector('.popup__button');
+  if (isValid) {
+    saveButton.disabled = false;
+    saveButton.classList.remove(validationConfig.inactiveButtonClass);
+  } else {
+    saveButton.disabled = true;
+    saveButton.classList.add(validationConfig.inactiveButtonClass);
+  }
 }
+
+
+
+
+
 
 // Валидация формы «Редактировать профиль»
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   descriptionInput.addEventListener('input', validateForm);
 });
 
-// Валидация формы «Новое место»
+/* // Валидация формы «Новое место» мой код
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.forms['new-place'];
   const placeNameInput = form.elements['place-name'];
@@ -93,6 +110,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
   placeNameInput.addEventListener('input', validateForm);
   linkInput.addEventListener('input', validateForm);
+}); */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.forms['new-place'];
+  const placeNameInput = form.elements['place-name'];
+  const linkInput = form.elements['link'];
+  const errorPlaceName = form.querySelector('.popup__error_visible_place-name');
+  const errorLink = form.querySelector('.popup__error_visible_link');
+  const openAddButton = document.querySelector('.profile__add-button'); // Кнопка открытия модального окна
+  const popupNewCard = document.querySelector('.popup_type_new-card'); // Модальное окно
+
+  const validateForm = () => {
+    const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
+      minLength: 2,
+      maxLength: 30,
+      regex: /^[a-zA-Zа-яА-Я\s\-]+$/,
+      errorClass: 'popup__input_type_error'
+    });
+
+    const isLinkValid = validateUrl(linkInput, errorLink, {
+      errorClass: 'popup__input_type_error'
+    });
+
+    // Проверяем, что оба поля заполнены и валидны
+    const isFormValid = isPlaceNameValid && isLinkValid && placeNameInput.value.trim() !== '' && linkInput.value.trim() !== '';
+
+    // Управляем состоянием кнопки
+    toggleSaveButton(form, isFormValid);
+  };
+
+  // Добавляем обработчики на оба поля
+  placeNameInput.addEventListener('input', validateForm);
+  linkInput.addEventListener('input', validateForm);
+
+  // Инициализация состояния кнопки при открытии модального окна
+  openAddButton.addEventListener('click', () => {
+    // Не сбрасываем форму, чтобы сохранить введённые данные
+    clearValidation(form, validationConfig); // Очищаем ошибки валидации
+
+    // Проверяем валидность формы при открытии
+    validateForm();
+
+    // Открываем модальное окно
+    openModal(popupNewCard);
+  });
+
+  // Обработчик успешного сабмита формы
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    // Здесь код для отправки данных формы, например, через fetch
+
+    // Если отправка прошла успешно
+    form.reset(); // Сбрасываем форму только после успешного сабмита
+    clearValidation(form, validationConfig); // Очищаем ошибки
+
+    // Закрываем модальное окно
+    closeModal(popupNewCard);
+  });
+
+  // Обработчик закрытия модального окна
+  popupNewCard.addEventListener('click', (event) => {
+    if (event.target === popupNewCard || event.target.classList.contains('popup__close')) {
+      // Не сбрасываем форму, чтобы сохранить введённые данные
+      clearValidation(form, validationConfig); // Очищаем ошибки
+
+      // Закрываем модальное окно
+      closeModal(popupNewCard);
+    }
+  });
 });
 
 // Функция обработки клика по изображению
@@ -137,7 +224,7 @@ function handleEditProfileFormSubmit(evt) {
 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
-// Обработчик открытия модального окна добавления карточки
+//Обработчик открытия модального окна добавления карточки
 openAddButton.addEventListener('click', () => {
   const isFormSubmitted = newCardForm.dataset.submitted === 'true';
 

@@ -8,7 +8,6 @@
 
 .popup__input {
   display: block;
-  padding-left: 5px;
   width: 100%;
   height: 27px;
   border: 0;
@@ -16,11 +15,7 @@
   font-size: 14px;
   line-height: 18px;
   box-sizing: border-box;
-  padding: 5px 0;
-}
-
-.popup__input_type_error {
-  border-bottom: 1px solid red;
+  padding: 5px;
 }
 
 .popup__input-error {
@@ -29,6 +24,9 @@
   color: red;
   font-size: 12px;
   padding-top: 5px;
+}
+.popup__input_type_error {
+  border-bottom: 1px solid red;
 }
 
 input::placeholder {
