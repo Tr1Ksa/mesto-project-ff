@@ -10,22 +10,8 @@ export const validationConfig = {
   errorClass: 'popup__input-error',
 };
 
-/* // Функция для очистки ошибок валидации и сброса состояния кнопки
-export function clearValidation(formElement, config) {
-  const errorElements = formElement.querySelectorAll(`.${config.errorClass}`);
-  errorElements.forEach(errorElement => {
-    errorElement.textContent = '';
-  });
+// Функция для очистки ошибок валидации и сброса состояния кнопки
 
-  const inputElements = formElement.querySelectorAll(config.inputSelector);
-  inputElements.forEach(inputElement => {
-    inputElement.classList.remove(config.inputErrorClass);
-  });
-
-  const submitButton = formElement.querySelector(config.submitButtonSelector);
-  submitButton.disabled = true;
-  submitButton.classList.add(config.inactiveButtonClass);
-} */
   export function clearValidation(formElement, config) {
     const errorElements = formElement.querySelectorAll(`.${config.errorClass}`);
     errorElements.forEach(errorElement => {
@@ -44,32 +30,6 @@ export function clearValidation(formElement, config) {
   }
 
 // Общая функция для валидации
-/* export function validateInput(inputElement, errorElement, validationRules) {
-  const value = inputElement.value.trim();
-  const length = value.length;
-
-  if (length === 0) {
-    errorElement.textContent = 'Вы пропустили это поле.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  if (validationRules.regex && !validationRules.regex.test(value)) {
-    errorElement.textContent = inputElement.dataset.error;
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  if (length < validationRules.minLength || length > validationRules.maxLength) {
-    errorElement.textContent = `Минимальное количество символов ${validationRules.minLength}. Длина текста сейчас: ${length} символов.`;
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  errorElement.textContent = '';
-  inputElement.classList.remove(validationRules.errorClass);
-  return true;
-} */
   export function validateInput(inputElement, errorElement, validationRules) {
     const value = inputElement.value.trim();
     const length = value.length;
@@ -101,7 +61,7 @@ export function clearValidation(formElement, config) {
     inputElement.classList.remove(validationRules.errorClass);
     return true;
   }
-//========================================================================================================================================
+
 // Функция для валидации имени
 export function validateName(nameInput, nameError) {
   const validationRules = {
@@ -122,57 +82,8 @@ export function validateDescription(descriptionInput, descriptionError) {
   };
   return validateInput(descriptionInput, descriptionError, validationRules);
 }
-//=====================================================================================================================================
-// Универсальная функция для валидации URL
-/* export function validateUrl(inputElement, errorElement, validationRules) {
-  const value = inputElement.value.trim();
-  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-
-  if (value.length === 0) {
-    errorElement.textContent = 'Вы пропустили это поле.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  if (!urlPattern.test(value)) {
-    errorElement.textContent = 'Введите адрес сайта.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  errorElement.textContent = '';
-  inputElement.classList.remove(validationRules.errorClass);
-  return true;
-} */
 
 // Универсальная функция для валидации URL
-/* export function validateUrl(inputElement, errorElement, validationRules) {
-  const value = inputElement.value.trim();
-  const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-  const imageExtensions = /\.(jpeg|jpg|png|gif|bmp|webp|svg)$/i;
-
-  if (value.length === 0) {
-    errorElement.textContent = 'Вы пропустили это поле.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  if (!urlPattern.test(value)) {
-    errorElement.textContent = 'Введите адрес сайта.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  if (!imageExtensions.test(value)) {
-    errorElement.textContent = 'Указанный URL не ведёт на изображение.';
-    inputElement.classList.add(validationRules.errorClass);
-    return false;
-  }
-
-  errorElement.textContent = '';
-  inputElement.classList.remove(validationRules.errorClass);
-  return true;
-} */
   export function validateUrl(inputElement, errorElement, validationRules) {
     const value = inputElement.value.trim();
     const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
@@ -208,27 +119,7 @@ export function validateDescription(descriptionInput, descriptionError) {
     return true;
   }
 
-
-  //=====================================================================================
-
 // Функция для включения валидации всех форм
-/* export function enableValidation(config) {
-  const forms = document.querySelectorAll(config.formSelector);
-  forms.forEach(form => {
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-    });
-
-    const inputs = form.querySelectorAll(config.inputSelector);
-    inputs.forEach(input => {
-      input.addEventListener('input', () => {
-        const errorElement = form.querySelector(`#${input.id}-error`);
-        validateInput(input, errorElement, config);
-      });
-    });
-  });
-} */
-
 export function enableValidation(config) {
     const forms = document.querySelectorAll(config.formSelector);
     forms.forEach(form => {
