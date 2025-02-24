@@ -166,7 +166,7 @@ function submitAddCardForm(evt) {
 
   addNewCard(cardName, cardLink)
     .then((cardData) => {
-      const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal);
+      const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal, deleteCardApi, closeModal);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
       newCardForm.dataset.submitted = 'true'; // Устанавливаем флаг сабмита
@@ -213,7 +213,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
-        const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal);
+        const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal, deleteCardApi, closeModal);
         cardsList.appendChild(cardElement);
     });
 })
@@ -245,12 +245,12 @@ function submitConfirmationForm(evt) {
 
 confirmDeleteForm.addEventListener('submit', submitConfirmationForm);
 
+// Обработчик для открытия модального окна при клике на иконку редактирования аватара
 const editAvatarButton = document.querySelector('.profile__edit-avatar-button');
 const popupEditAvatar = document.querySelector('.popup_type_edit-avatar');
 const editAvatarForm = document.querySelector('.popup__form[name="edit-avatar"]');
 const avatarUrlInput = editAvatarForm.querySelector('.popup__input_type_avatar-url');
 
-// Обработчик для открытия модального окна при клике на иконку редактирования аватара
 editAvatarButton.addEventListener('click', () => {
   editAvatarForm.reset();
   clearValidation(editAvatarForm, validationConfig);

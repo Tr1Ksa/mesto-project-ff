@@ -13,7 +13,7 @@ function getCardTemplate() {
 }
 
 // Функция для создания карточки
-export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal) {
+export function createCard(item, likeHandler, deleteHandler, imageClickHandler, currentUserId, openModal, deleteCardApi, closeModal) {
   const cardElement = getCardTemplate();
   if (!cardElement) {
     return null;
@@ -51,7 +51,7 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
   // Если карточка принадлежит текущему пользователю, добавляем обработчик удаления мой код
   if (item.owner && item.owner._id === currentUserId) {
     deleteButton.addEventListener('click', () => {
-      deleteHandler(item._id, openModal, cardElement);
+      deleteHandler(item._id, openModal, cardElement, deleteCardApi, closeModal);
     });
   } else {
     deleteButton.remove();
@@ -84,86 +84,30 @@ export function handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeC
 }
 
 // Функция удаления карточки
-/* export function deleteCard(cardId, openModal) {
+
+export function deleteCard(cardId, openModal, cardElement, deleteCardApi, closeModal) {
   const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
   if (confirmDeletePopup) {
-    // Открываем модальное окно и передаем ID карточки
     openModal(confirmDeletePopup);
-    confirmDeletePopup.dataset.cardId = cardId;
+
+    const confirmButton = confirmDeletePopup.querySelector('.popup__confirm-button');
+    const handleConfirmClick = (e) => {
+      e.preventDefault();
+      deleteCardApi(cardId)
+        .then(() => {
+          cardElement.remove();
+          closeModal(confirmDeletePopup);
+        })
+        .catch((err) => {
+          console.error('Ошибка при удалении карточки:', err);
+        })
+        .finally(() => {
+          confirmButton.removeEventListener('click', handleConfirmClick);
+        });
+    };
+
+    confirmButton.addEventListener('click', handleConfirmClick);
   } else {
     console.error('Модальное окно подтверждения удаления не найдено');
   }
-} */
-
- export function deleteCard(cardId, openModal) {
-    const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
-    if (confirmDeletePopup) {
-      // Открываем модальное окно и передаем ID карточки
-      openModal(confirmDeletePopup);
-      confirmDeletePopup.dataset.cardId = cardId;
-    } else {
-      console.error('Модальное окно подтверждения удаления не найдено');
-    }
-  }
-
-
-/* export function deleteCard(cardId, cardElement, openModal) {
-    const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
-
-    if (confirmDeletePopup) {
-        // Открываем модальное окно
-        openModal(confirmDeletePopup);
-        
-        // Передаём ID карточки в dataset модального окна
-        confirmDeletePopup.dataset.cardId = cardId;
-
-        // Находим кнопку подтверждения удаления
-        const confirmButton = confirmDeletePopup.querySelector('.popup__button-confirm');
-
-        // Удаляем предыдущий обработчик, чтобы избежать дублирования
-        confirmButton.replaceWith(confirmButton.cloneNode(true));
-        const newConfirmButton = confirmDeletePopup.querySelector('.popup__button-confirm');
-
-        // Добавляем обработчик клика на новую кнопку
-        newConfirmButton.addEventListener('click', () => {
-          console.log('Удаляем карточку с ID:', cardId);
-            fetch(`https://nomoreparties.co/v1/wff-cohort-33/cards/${cardId}`, {
-                method: 'DELETE',
-                headers: {
-                    authorization: '1b4b2558-fdd9-468b-bcf2-a18254476256'
-                }
-            })
-            .then(res => {
-                if (!res.ok) {
-                  return res.json().catch(() => Promise.reject(new Error('Ошибка парсинга JSON')));
-                }
-                return res.json();
-            })
-            .then(() => {
-              fetch('https://nomoreparties.co/v1/wff-cohort-33/users/me', {
-                method: 'GET',
-                headers: {
-                  authorization: '1b4b2558-fdd9-468b-bcf2-a18254476256'
-                }
-              })
-                console.log('Карточка успешно удалена с сервера:', cardId);
-                
-                // Удаляем карточку из DOM
-                if (cardElement) {
-                  console.log('currentUserId:', currentUserId);
-console.log('Владелец карточки:', item.owner._id);
-                    cardElement.remove();
-                    console.log('Карточка удалена из DOM');
-                }
-
-                // Закрываем модальное окно
-                confirmDeletePopup.classList.remove('popup_opened');
-            })
-            .catch(err => {
-                console.error('Ошибка при удалении карточки:', err);
-            });
-        });
-    } else {
-        console.error('Модальное окно подтверждения удаления не найдено');
-    }
-} */
+}

@@ -88,6 +88,7 @@ export const deleteCardApi = (cardId) => {
     });
 };
 
+
 // Постановка лайка
 export const likeCard = (cardId) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
