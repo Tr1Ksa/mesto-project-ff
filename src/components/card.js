@@ -81,7 +81,6 @@ export function handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeC
 }
 
 // Функция удаления карточки
-
 export function deleteCard(cardId, openModal, cardElement, deleteCardApi, closeModal) {
   const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
   if (confirmDeletePopup) {
