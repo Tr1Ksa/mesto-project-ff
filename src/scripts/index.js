@@ -26,10 +26,8 @@ const profileDescription = document.querySelector('.profile__description'); // �
 const newCardNameInput = newCardForm.querySelector('.popup__input_type_card-name'); // Поле ввода названия карточки
 const newCardLinkInput = newCardForm.querySelector('.popup__input_type_url'); // Поле ввода ссылки на карточку
 const popupImage = document.querySelector('.popup__image');
-
 const placeNameInput = newCardForm.elements['place-name'];
 const linkInput = newCardForm.elements['link'];
-
 const nameError = editProfileForm.querySelector('.popup__error_type_name');
 const descriptionError = editProfileForm.querySelector('.popup__error_type_description');
 const errorPlaceName = newCardForm.querySelector('.popup__error_visible_place-name');
@@ -59,22 +57,6 @@ function toggleSaveButton(form, isValid) {
 }
 
 // Валидация формы «Редактировать профиль»
-/* document.addEventListener('DOMContentLoaded', () => {
-  const form = document.forms['edit-profile'];
-  const nameInput = form.elements.name;
-  const descriptionInput = form.elements.description;
-  const nameError = form.querySelector('.popup__error_type_name');
-  const descriptionError = form.querySelector('.popup__error_type_description');
-
-  const validateForm = () => {
-    const isNameValid = validateName(nameInput, nameError);
-    const isDescriptionValid = validateDescription(descriptionInput, descriptionError);
-    toggleSaveButton(form, isNameValid && isDescriptionValid);
-  };
-
-  nameInput.addEventListener('input', validateForm);
-  descriptionInput.addEventListener('input', validateForm);
-}); */
 document.addEventListener('DOMContentLoaded', () => {
   const descriptionInput = editProfileForm.elements.description;
   const validateForm = () => {
@@ -87,66 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   descriptionInput.addEventListener('input', validateForm);
 });
 
-/// Валидация формы «Новое место» мой код
-/* document.addEventListener('DOMContentLoaded', () => {
-  const form = document.forms['new-place'];
-  const placeNameInput = form.elements['place-name'];
-  const linkInput = form.elements['link'];
-  const errorPlaceName = form.querySelector('.popup__error_visible_place-name');
-  const errorLink = form.querySelector('.popup__error_visible_link');
-  const openAddButton = document.querySelector('.profile__add-button');
-  const popupNewCard = document.querySelector('.popup_type_new-card');
-
-  const validateForm = () => {
-    const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
-      minLength: 2,
-      maxLength: 30,
-      regex: /^[a-zA-Zа-яА-Я\s\-]+$/,
-      errorClass: 'popup__input_type_error'
-    });
-
-    const isLinkValid = validateUrl(linkInput, errorLink, {
-      errorClass: 'popup__input_type_error'
-    });
-
-    const isFormValid = isPlaceNameValid && isLinkValid && placeNameInput.value.trim() !== '' && linkInput.value.trim() !== '';
-
-    toggleSaveButton(form, isFormValid);
-  };
-
-  // Добавляем обработчики на оба поля
-  placeNameInput.addEventListener('input', validateForm);
-  linkInput.addEventListener('input', validateForm);
-
-  // Инициализация состояния кнопки при открытии модального окна
-  openAddButton.addEventListener('click', () => {
-    clearValidation(form, validationConfig);
-
-    validateForm();
-
-    openModal(popupNewCard);
-  });
-
-  // Обработчик успешного сабмита формы
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    form.reset();
-    clearValidation(form, validationConfig);
-
-    closeModal(popupNewCard);
-  });
-
-  // Обработчик закрытия модального окна
-  popupNewCard.addEventListener('click', (event) => {
-    if (event.target === popupNewCard || event.target.classList.contains('popup__close')) {
-      clearValidation(form, validationConfig);
-
-      closeModal(popupNewCard);
-    }
-  });
-}); */
-
+// Валидация формы «Новое место»
 document.addEventListener('DOMContentLoaded', () => {
   const validateForm = () => {
     const isPlaceNameValid = validateInput(placeNameInput, errorPlaceName, {
@@ -176,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   newCardForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    form.reset();
+    newCardForm.reset();
     clearValidation(newCardForm, validationConfig);
     closeModal(popupNewCard);
   });
@@ -241,7 +164,7 @@ openAddButton.addEventListener('click', () => {
     const submitButton = newCardForm.querySelector('.popup__button');
     submitButton.disabled = true;
     submitButton.classList.add(validationConfig.inactiveButtonClass);
-    delete newCardForm.dataset.submitted; // Удаляем флаг сабмита
+    delete newCardForm.dataset.submitted;
   }
 
   openModal(popupNewCard);
@@ -263,7 +186,7 @@ function submitAddCardForm(evt) {
       const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal, deleteCardApi, closeModal);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
-      newCardForm.dataset.submitted = 'true'; // Устанавливаем флаг сабмита
+      newCardForm.dataset.submitted = 'true';
     })
     .catch((err) => {
       console.error('Ошибка при добавлении карточки:', err);
