@@ -509,17 +509,10 @@ function submitAddCardForm(evt) {
 
 newCardForm.addEventListener('submit', submitAddCardForm);
 
-/* // Обработчик открытия модального окна добавления карточки
+// Обработчик открытия модального окна добавления карточки
 openAddButton.addEventListener('click', () => {
-  openModal(popupNewCard);
-}); */
-
-openAddButton.addEventListener('click', () => {
-  
-  clearValidation(newCardForm, validationConfig); // Очистка ошибок валидации и блокировка кнопки
   openModal(popupNewCard);
 });
-
 
 newCardForm.addEventListener('submit', (event) => {
   event.preventDefault();
