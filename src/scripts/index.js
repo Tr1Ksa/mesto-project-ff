@@ -382,7 +382,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
-}); */
+});
+
+
+ */
+
+
+
+
+
+
+
+
+
+
 
 
 // Импорт стилей и модулей
@@ -421,6 +434,8 @@ let currentUserId; // ID текущего пользователя
 // Включение валидации всех форм на странице
 enableValidation(validationConfig);
 
+//=================================================================================================================
+
 // Функция для обновления информации профиля на странице
 function updateProfileInfo(name, job) {
   profileTitle.textContent = name; // Обновляем имя
@@ -444,7 +459,6 @@ function handleEditProfileFormSubmit(evt) {
   updateProfile(name, job)
     .then((userData) => {
       updateProfileInfo(userData.name, userData.about); // Обновляем информацию на странице
-      clearValidation(editProfileForm, validationConfig);
       closeModal(popupTypeEdit); // Закрываем модальное окно
     })
     .catch((err) => {
