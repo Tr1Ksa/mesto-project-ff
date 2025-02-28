@@ -6,7 +6,6 @@ export function openModal(popup) {
   popup.classList.remove('popup_is-animated');
   document.addEventListener('keydown', handleEscape);
 }
-
 // Функция закрытия модального окна
 export function closeModal(popup) {
   popup.classList.remove('popup_is-opened');

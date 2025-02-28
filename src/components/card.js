@@ -109,7 +109,7 @@ export function deleteCard(cardId, openModal, cardElement, deleteCardApi, closeM
 } */
 
 
-  //card.js
+//card.js
 
 // Глобальная переменная для хранения шаблона карточки
 const cardTemplate = document.querySelector('#card-template');
@@ -159,8 +159,6 @@ export function createCard(item, likeHandler, deleteHandler, imageClickHandler, 
 
   // Устанавливаем ID карточки в dataset
   cardElement.dataset.cardId = item._id || '';
-  // Если карточка принадлежит текущему пользователю, добавляем обработчик удаления
-  // Если карточка принадлежит текущему пользователю, добавляем обработчик удаления
   if (item.owner && item.owner._id === currentUserId) {
     deleteButton.addEventListener('click', () => {
       deleteHandler(item._id, cardElement, deleteCardApi);
