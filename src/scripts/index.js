@@ -92,7 +92,7 @@ function openImagePopup(event) {
 }
 
 // Обработчик отправки формы добавления новой карточки
-  function submitAddCardForm(evt) {
+function submitAddCardForm(evt) {
   evt.preventDefault();
 
   const saveButton = newCardForm.querySelector('.popup__button');
@@ -105,7 +105,7 @@ function openImagePopup(event) {
 
   addNewCard(cardName, cardLink)
     .then((cardData) => {
-      const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal, deleteCardApi, closeModal);
+      const cardElement = createCard(cardData, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, deleteCardApi);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
       newCardForm.reset();
@@ -115,7 +115,6 @@ function openImagePopup(event) {
       console.error('Ошибка при добавлении карточки:', err);
     })
     .finally(() => {
-
       toggleButtonLoadingState(saveButton, false, defaultText);
     });
 }
@@ -155,7 +154,6 @@ function submitUpdateAvatarForm(evt) {
 
 editAvatarForm.addEventListener('submit', submitUpdateAvatarForm);
 
-
 // Обработчик для открытия модального окна при клике на иконку редактирования аватара
 editAvatarButton.addEventListener('click', () => {
   editAvatarForm.reset();
@@ -179,7 +177,7 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileImage.style.backgroundImage = `url('${userData.avatar}')`;
 
     cards.forEach((item) => {
-      const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, openModal, deleteCardApi, closeModal);
+      const cardElement = createCard(item, (cardId, likeButton, likeCount) => handleLikeClick(cardId, likeButton, likeCount, likeCard, unlikeCard), deleteCard, openImagePopup, currentUserId, deleteCardApi);
       cardsList.appendChild(cardElement);
     });
   })

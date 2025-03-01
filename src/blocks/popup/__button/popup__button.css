@@ -1,5 +1,7 @@
 .popup__button {
-  min-width: 358px;;
+  min-width: 358px;
+  width: 100%;
+  max-width: 100%;
   height: 50px;
   font-size: 18px;
   line-height: 22px;
@@ -28,6 +30,7 @@
 
 @media screen and (max-width: 568px) {
   .popup__button {
+    min-width: unset;
     font-size: 14px;
     line-height: 17px;
   }
