@@ -1,13 +1,13 @@
 // index.js
 
 // Импорт стилей и модулей
-import '../pages/index.css'; // Основные стили для страницы
-import { openModal, closeModal } from '../components/modal.js'; // Функции для открытия и закрытия модальных окон
-import { createCard, handleLikeClick, deleteCard } from '../components/card.js'; // Функции для работы с карточками
-import { closePopupByClick } from '../components/modal.js'; // Функция для закрытия модального окна по клику вне его области
-import { validationConfig, enableValidation, clearValidation } from '../components/validation.js'; // Конфигурация и функции для валидации форм
-import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js'; // Функции для работы с API
-import { toggleButtonLoadingState } from '../components/utils.js'; // Функция для изменения состояния кнопки при загрузке
+import '../pages/index.css';
+import { openModal, closeModal } from '../components/modal.js';
+import { createCard, handleLikeClick, deleteCard } from '../components/card.js';
+import { closePopupByClick } from '../components/modal.js';
+import { validationConfig, enableValidation, clearValidation } from '../components/validation.js';
+import { getUserInfo, getInitialCards, updateProfile, addNewCard, deleteCardApi, likeCard, unlikeCard, updateAvatar } from '../components/api.js';
+import { toggleButtonLoadingState } from '../components/utils.js';
 
 // Получение DOM-элементов
 const cardsList = document.querySelector('.places__list');
