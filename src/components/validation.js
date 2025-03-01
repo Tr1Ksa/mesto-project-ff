@@ -28,13 +28,8 @@ const hideInputError = (formElement, inputElement, config) => {
 
 // Функция для проверки, что URL ведет на изображение
 const isValidImageUrl = (url) => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = url;
-
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-  });
+  const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp))$/i;
+  return urlPattern.test(url);
 };
 
 // Функция для получения кастомного сообщения об ошибке
@@ -43,9 +38,8 @@ const getCustomErrorMessage = (inputElement) => {
 };
 
 // Функция для проверки валидности поля
-const checkInputValidity = async (formElement, inputElement, config) => {
+const checkInputValidity = (formElement, inputElement, config) => {
   if (inputElement.validity.patternMismatch) {
-    // Используем кастомное сообщение об ошибке
     inputElement.setCustomValidity(getCustomErrorMessage(inputElement));
   } else {
     inputElement.setCustomValidity('');
@@ -53,7 +47,7 @@ const checkInputValidity = async (formElement, inputElement, config) => {
 
   // Проверка для URL-поля
   if (inputElement.type === 'url' && inputElement.validity.valid) {
-    const isValidImage = await isValidImageUrl(inputElement.value);
+    const isValidImage = isValidImageUrl(inputElement.value);
     if (!isValidImage) {
       inputElement.setCustomValidity('Указанный URL не ведёт на изображение.');
     } else {
@@ -104,8 +98,8 @@ const setEventListeners = (formElement, config) => {
   toggleSaveButton(inputList, buttonElement, config);
 
   inputList.forEach((inputElement) => {
-    inputElement.addEventListener('input', async () => {
-      await checkInputValidity(formElement, inputElement, config);
+    inputElement.addEventListener('input', () => {
+      checkInputValidity(formElement, inputElement, config);
       toggleSaveButton(inputList, buttonElement, config);
     });
   });

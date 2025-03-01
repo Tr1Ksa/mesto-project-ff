@@ -123,7 +123,7 @@ newCardForm.addEventListener('submit', submitAddCardForm);
 
 // Обработчик открытия модального окна добавления карточки
 openAddButton.addEventListener('click', () => { 
-  clearValidation(newCardForm, validationConfig); 
+  clearValidation(newCardForm, validationConfig);
   openModal(popupNewCard); 
 }); 
 
